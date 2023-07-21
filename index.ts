@@ -11,6 +11,7 @@ import {
 } from "./db/helpers/problem-request.helper";
 import { getAdmins, login } from "./db/helpers/administrator-request.helper";
 import { deleteComment, getCommentsToProblem, insertCommentToProblem } from "./db/helpers/comment-request.helper";
+import { sendNotifications, subscribe } from "./db/helpers/subscription-request.helper";
 
 const app: Express = express();
 
@@ -24,6 +25,8 @@ app.use(cors());
 // GET ROUTES
 app.get("/get-categories", getCategories);
 app.get("/get-places", getPlaces);
+
+app.get("/send-notification", sendNotifications)
 
 // POST ROUTES
 app.post("/report-problem", insertProblem);
@@ -45,6 +48,7 @@ app.get("/get-comments", getCommentsToProblem);
 // POST ROUTES
 app.post("/login", login);
 app.post("/create-comment", insertCommentToProblem);
+app.post("/subscribe", subscribe)
 
 // UPDATE ROUTES
 app.put("/update-problem", updateProblem);
