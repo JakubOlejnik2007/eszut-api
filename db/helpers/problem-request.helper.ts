@@ -1,4 +1,4 @@
-import { TProblem } from "../../types/db-types";
+import { IProblem } from "../../types/db-types";
 import Category from "../models/category.helper";
 import Problem from "../models/problem.helper";
 import { Request, Response } from "express";
@@ -17,11 +17,12 @@ export const getUnsolvedProblems = async (req: Request, res: Response) => {
             whoDeals: problem.whoDealsID ? problem.whoDealsID.name : "",
             whoDealsID: problem.whoDealsID ?  problem.whoDealsID._id : ""
         }));
-
+        res.status(200)
         res.send(problemsWithCategoryName);
     } catch (error) {
+        res.status(503)
         res.send({
-            status: `ERROR: ${error}`,
+            text: error,
         });
     }
 };
@@ -31,28 +32,27 @@ export const getSolvedProblems = async (req: Request, res: Response) => {
         const problems: any = await Problem.find({
             isSolved: true,
         });
-
+        res.status(200)
         res.send(problems);
     } catch (error) {
+        res.status(503)
         res.send({
-            status: `ERROR: ${error}`,
+            text: error,
         });
     }
 };
 
 export const insertProblem = async (req: Request, res: Response) => {
     try {
-        const problem = req.body as TProblem;
+        const problem = req.body as IProblem;
         
         console.log(problem);
         await Problem.create(problem);
-        res.send({
-            status: "OK",
-        });
+        res.sendStatus(200)
     } catch (error) {
-        console.log(error);
+        res.status(503)
         res.send({
-            status: `ERROR: ${error}`,
+            text: error,
         });
     }
 };
@@ -63,13 +63,11 @@ export const updateProblem = async (req: Request, res: Response) => {
             priority: req.body.priority,
             CategoryID: req.body.CategoryID
         })
-        res.send({
-            status: "OK"
-        })
+        res.sendStatus(200)
     } catch (error) {
-        console.log(error);
+        res.status(503)
         res.send({
-            status: `ERROR: ${error}`,
+            text: error,
         });
     }
 }

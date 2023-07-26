@@ -1,28 +1,22 @@
-import { Request, Response, NextFunction } from "express"
-import { Secret, verify } from "jsonwebtoken"
+import { Request, Response, NextFunction } from "express";
+import { Secret, verify } from "jsonwebtoken";
 import config from "../config";
 
-interface JWT_Request extends Request {
-    user?: any
-}
+const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
 
-const authenticateToken = (req: JWT_Request, res: Response, next: NextFunction) => {
-    // Pobierz nagłówek autoryzacyjny z żądania
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-  
     if (token == null) {
-      return res.sendStatus(401); // Brak tokena - brak autoryzacji
+        return res.sendStatus(401);
     }
-  
-    // Zweryfikuj i odczytaj dane uwierzytelniające z tokena
-    verify(token, config.authentication.secret as Secret, (err, user) => {
-      if (err) {
-        return res.sendStatus(403); // Błędny token - brak autoryzacji
-      }
-      req.user = user; // Przekaż dane uwierzytelniające do następnego middleware
-      next();
+
+    verify(token, config.authentication.secret as Secret, (err) => {
+        if (err) {
+            return res.sendStatus(403);
+        }
+
+        next();
     });
-  }
+};
 
 export default authenticateToken;

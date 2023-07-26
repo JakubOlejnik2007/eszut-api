@@ -1,16 +1,16 @@
 import mongoose from "mongoose"
 
-export type TCategory = {
+export interface ICategory {
     _id?: mongoose.Schema.Types.ObjectId,
     name: String
 }
 
-export type TPlaces = {
+export interface IPlaces {
     _id?: mongoose.Schema.Types.ObjectId,
     name: String
 }
 
-export type TProblem = {
+export interface IProblem {
     _id?: mongoose.Schema.Types.ObjectId,
     priority: Number,
     PlaceID: mongoose.Schema.Types.ObjectId,
@@ -27,14 +27,14 @@ export type TProblem = {
     CategoryID: mongoose.Schema.Types.ObjectId
 }
 
-export type TAdministrator = {
+export interface IAdministrator {
     _id?: mongoose.Schema.Types.ObjectId,
     name: String,
     password?: String,
     email: String
 }
 
-export type TComment = {
+export interface IComment {
     _id?: mongoose.Schema.Types.ObjectId,
     AdministratorID?: mongoose.Schema.Types.ObjectId,
     ProblemID: mongoose.Schema.Types.ObjectId,
@@ -48,4 +48,11 @@ export interface ISubscription {
         auth: string;
         p256dh: string
     }
+}
+
+export interface IUser {
+    _id?: string,
+    name: string,
+    email: string,
+    password?: string
 }
