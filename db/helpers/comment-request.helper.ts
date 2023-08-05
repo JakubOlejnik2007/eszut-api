@@ -38,9 +38,8 @@ export const deleteComment = async (req: Request, res: Response) => {
     console.log(req.body.id)
     try {
         await Comment.findByIdAndDelete(req.body.id);
-        res.status(200)
+        res.sendStatus(200)
     } catch (error) {
-        console.log(error)
         res.status(503)
         res.send({
             text: error

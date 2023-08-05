@@ -2,6 +2,7 @@ import { IProblem } from "../../types/db-types";
 import Category from "../models/category.helper";
 import Problem from "../models/problem.helper";
 import { Request, Response } from "express";
+import { sendNotifications } from "./subscription-request.helper";
 
 export const getUnsolvedProblems = async (req: Request, res: Response) => {
     try {
@@ -49,6 +50,7 @@ export const insertProblem = async (req: Request, res: Response) => {
         console.log(problem);
         await Problem.create(problem);
         res.sendStatus(200)
+        sendNotifications();
     } catch (error) {
         res.status(503)
         res.send({

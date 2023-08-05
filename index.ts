@@ -12,6 +12,7 @@ import {
 import { getAdmins, login } from "./db/helpers/administrator-request.helper";
 import { deleteComment, getCommentsToProblem, insertCommentToProblem } from "./db/helpers/comment-request.helper";
 import { sendNotifications, subscribe } from "./db/helpers/subscription-request.helper";
+import authenticateToken from "./helpers/token-authentication.helper";
 
 const app: Express = express();
 
