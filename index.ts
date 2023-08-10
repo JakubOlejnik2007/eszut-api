@@ -7,6 +7,9 @@ import {
     getSolvedProblems,
     getUnsolvedProblems,
     insertProblem,
+    markProblemAsSolved,
+    rejectProblem,
+    takeOnProblem,
     updateProblem,
 } from "./db/helpers/problem-request.helper";
 import { getAdmins, login } from "./db/helpers/administrator-request.helper";
@@ -49,11 +52,14 @@ app.get("/get-comments", getCommentsToProblem);
 // POST ROUTES
 app.post("/login", login);
 app.post("/create-comment", insertCommentToProblem);
-app.post("/subscribe", subscribe)
+app.post("/subscribe", subscribe);
 
 // UPDATE ROUTES
 app.put("/update-problem", updateProblem);
-
+app.put("/take-on-problem", takeOnProblem);
+app.put("/reject-problem", rejectProblem);
+app.put("/mark-problem-as-solved", markProblemAsSolved);
+app.put("/mark-problem-as-unsolved");
 // DELETE ROUTES
 app.delete("/delete-comment", deleteComment);
 

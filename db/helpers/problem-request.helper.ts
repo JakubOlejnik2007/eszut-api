@@ -73,3 +73,49 @@ export const updateProblem = async (req: Request, res: Response) => {
         });
     }
 }
+
+export const takeOnProblem = async (req: Request, res: Response) => {
+    try {
+        if(!req.body.AdministratorID || !req.body.ProblemID) throw new Error;
+        const problem = await Problem.findById(req.body.ProblemID);
+        if(!problem) throw new Error;
+        if (problem.isUnderRealization) throw new Error;
+        problem.isUnderRealization = true
+        problem.whoDealsID = req.body.AdministratorID;
+        await problem.save()
+        res.sendStatus(200)
+    } catch {
+        res.sendStatus(503)
+    }
+}
+
+export const rejectProblem = async (req: Request, res: Response) => {
+    try {
+        if(!req.body.ProblemID) throw new Error;
+        const problem = await Problem.findById(req.body.ProblemID);
+        if(!problem) throw new Error;
+        if (!problem.isUnderRealization) throw new Error;
+        problem.isUnderRealization = false
+        await problem.save()
+        res.sendStatus(200)
+    } catch {
+        res.sendStatus(503)
+    }
+}
+
+export const markProblemAsSolved = async (req: Request, res: Response) => {
+    try {
+        if(!req.body.ProblemID) throw new Error;
+        const problem = await Problem.findById(req.body.ProblemID);
+        if(!problem) throw new Error;
+        if (!problem.isUnderRealization) throw new Error;
+        problem.isUnderRealization = false
+        problem.isSolved = true
+        problem.whoSolvedID = req.body.AdministratorID
+        await problem.save()
+        res.sendStatus(200)
+    } catch(error) {
+        console.log(error)
+        res.sendStatus(503)
+    }
+}
