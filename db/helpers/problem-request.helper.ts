@@ -1,5 +1,4 @@
 import { IProblem } from "../../types/db-types";
-import Category from "../models/category.helper";
 import Problem from "../models/problem.helper";
 import { Request, Response } from "express";
 import { sendNotifications } from "./subscription-request.helper";
@@ -43,7 +42,7 @@ export const getSolvedProblems = async (req: Request, res: Response) => {
             ...problem._doc,
             categoryName: problem.CategoryID.name,
             placeName: problem.PlaceID.name,
-            whoSolved: problem.whoSolvedID ? problem.whoSolvedID.name : ""
+            whoSolved: problem.whoSolvedID ? problem.whoSolvedID.name : "",
         }));
 
         res.status(200).json({
@@ -62,8 +61,8 @@ export const insertProblem = async (req: Request, res: Response) => {
 
         console.log(problem);
         await Problem.create(problem);
-        res.sendStatus(200);
         sendNotifications();
+        res.sendStatus(200);
     } catch (error) {
         res.status(503);
         res.send({
@@ -133,3 +132,23 @@ export const markProblemAsSolved = async (req: Request, res: Response) => {
         res.sendStatus(503);
     }
 };
+
+export const markProblemAsUnsolved = async (req: Request, res: Response) => {
+    try {
+        if (!req.body.ProblemID) throw new Error();
+        const problem = await Problem.findById(req.body.ProblemID);
+        if (!problem) throw new Error();
+        if (!problem.isSolved) throw new Error();
+        problem.isUnderRealization = true;
+        problem.isSolved = false;
+        problem.whoDealsID = req.body.AdministratorID;
+        await problem.save();
+        res.sendStatus(200);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(503);
+    }
+};
+
+export const isCategoryUsed = async (CategoryID: string): Promise<boolean> => Boolean(await Problem.findOne({CategoryID}));
+export const isPlaceUsed = async (PlaceID: string): Promise<boolean> => Boolean(await Problem.findOne({PlaceID}));

@@ -13,7 +13,6 @@ export const subscribe = async (req: Request, res: Response) => {
         let a = await Subscription.find({
             endpoint: subscription.endpoint,
         });
-        console.log(a, subscription);
         if (a.length < 1) subscription.save().catch(()=>{});
     } catch (error) {
         throw new Error(`[❌] ${error}`);
@@ -24,22 +23,20 @@ export const subscribe = async (req: Request, res: Response) => {
 const getSubscriptions = async (): Promise<ISubscription[]> => {
     try {
         return await Subscription.find({});
-    } catch (error) {
-        console.log(error);
+    } catch {
         return [];
     }
 };
 
 export const sendNotifications = async () => {
     try {
-        console.log(`Subscriptions: ${await getSubscriptions()}`);
         const subscriptions = (await getSubscriptions()) satisfies ISubscription[];
         const payload = {
             title: "test notif",
             body: "Temporary body",
         };
         for (const subscription of subscriptions) {
-            webPush.sendNotification(subscription, JSON.stringify(payload)).catch(() => {});
+            webPush.sendNotification(subscription, JSON.stringify(payload)).catch((error) => {console.log(error)});
         }
     } catch (error) {
         console.log(error);

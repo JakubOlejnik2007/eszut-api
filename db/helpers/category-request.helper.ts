@@ -1,18 +1,36 @@
-require("../db_config");
-import { Request, Response } from "express"
+import { Request, Response } from "express";
 import Category from "../models/category.helper";
-
+import { isCategoryUsed } from "./problem-request.helper";
 
 export const getCategories = async (req: Request, res: Response) => {
     try {
-        const categories:any = await Category.find({});
+        const categories: any = await Category.find({});
         res.status(200);
         res.send(categories);
+    } catch {
+        res.sendStatus(503);
+    }
+};
 
-    } catch (error) {
-        res.status(503)
-        res.send({
-            text: error
-        });
+export const insertCategory = async (req: Request, res: Response) => {
+    try {
+        if (!req.body.name) throw new Error();
+        Category.create(req.body);
+        res.sendStatus(200);
+    } catch {
+        res.sendStatus(503);
+    }
+};
+
+export const deleteCategory = async (req: Request, res: Response) => {
+    try {
+        if (!req.body.CategoryID) throw new Error();
+
+        if (await isCategoryUsed(req.body.CategoryID)) throw new Error();
+        
+        await Category.findByIdAndDelete(req.body.CategoryID);
+        res.sendStatus(200);
+    } catch {
+        res.sendStatus(503);
     }
 };
