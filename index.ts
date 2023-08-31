@@ -29,11 +29,12 @@ app.use(cors());
 // GET ROUTES
 app.get("/get-categories", getCategories);
 app.get("/get-places", getPlaces);
-
 app.get("/send-notification", sendNotifications)
 
 // POST ROUTES
 app.post("/report-problem", insertProblem);
+app.post("/login", login);
+app.post("/subscribe", subscribe);
 
 // UPDATE ROUTES
 
@@ -43,25 +44,28 @@ app.post("/report-problem", insertProblem);
     PRIVATE ROUTES
 */
 
+
 // GET ROUTES
-app.get("/get-admins", getAdmins);
-app.get("/get-unsolved-problems", getUnsolvedProblems);
-app.get("/get-solved-problems", getSolvedProblems);
-app.get("/get-comments", getCommentsToProblem);
+app.get("/get-admins", authenticateToken, getAdmins);
+app.get("/get-unsolved-problems", authenticateToken, getUnsolvedProblems);
+app.get("/get-solved-problems"/*, authenticateToken*/, getSolvedProblems);
+app.get("/get-comments", authenticateToken, getCommentsToProblem);
+
+
+//sadasdas
 
 // POST ROUTES
-app.post("/login", login);
 app.post("/create-comment", insertCommentToProblem);
-app.post("/subscribe", subscribe);
 
 // UPDATE ROUTES
-app.put("/update-problem", updateProblem);
-app.put("/take-on-problem", takeOnProblem);
-app.put("/reject-problem", rejectProblem);
-app.put("/mark-problem-as-solved", markProblemAsSolved);
-app.put("/mark-problem-as-unsolved");
+app.put("/update-problem", authenticateToken, updateProblem);
+app.put("/take-on-problem", authenticateToken, takeOnProblem);
+app.put("/reject-problem", authenticateToken, rejectProblem);
+app.put("/mark-problem-as-solved", authenticateToken, markProblemAsSolved);
+app.put("/mark-problem-as-unsolved", authenticateToken);
+
 // DELETE ROUTES
-app.delete("/delete-comment", deleteComment);
+app.delete("/delete-comment", authenticateToken, deleteComment);
 
 app.listen(config.express.port, () => {
     console.log(`[⚡] Server is listening on port: ${config.express.port}!`);
