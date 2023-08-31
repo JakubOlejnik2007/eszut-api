@@ -2,6 +2,7 @@ import { IProblem } from "../../types/db-types";
 import Problem from "../models/problem.helper";
 import { Request, Response } from "express";
 import { sendNotifications } from "./subscription-request.helper";
+import Administrator from "../models/administrator.helper";
 
 export const getUnsolvedProblems = async (req: Request, res: Response) => {
     try {
@@ -63,11 +64,8 @@ export const insertProblem = async (req: Request, res: Response) => {
         await Problem.create(problem);
         sendNotifications();
         res.sendStatus(200);
-    } catch (error) {
-        res.status(503);
-        res.send({
-            text: error,
-        });
+    } catch {
+        res.sendStatus(503);
     }
 };
 
@@ -78,11 +76,8 @@ export const updateProblem = async (req: Request, res: Response) => {
             CategoryID: req.body.CategoryID,
         });
         res.sendStatus(200);
-    } catch (error) {
-        res.status(503);
-        res.send({
-            text: error,
-        });
+    } catch {
+        res.sendStatus(503);
     }
 };
 
@@ -152,3 +147,21 @@ export const markProblemAsUnsolved = async (req: Request, res: Response) => {
 
 export const isCategoryUsed = async (CategoryID: string): Promise<boolean> => Boolean(await Problem.findOne({CategoryID}));
 export const isPlaceUsed = async (PlaceID: string): Promise<boolean> => Boolean(await Problem.findOne({PlaceID}));
+
+export const isAdministratorAssignedToProblem = async (AdministratorID: string): Promise<boolean | Error>  => {
+
+        const problems = await Problem.find({
+          $or: [
+            {
+              whoDealsID: AdministratorID,
+              isUnderRealization: true,
+            },
+            {
+              whoSolvedID: AdministratorID,
+              isSolved: true,
+            },
+          ],
+        });
+
+        return problems.length > 0 ? true : false;
+}

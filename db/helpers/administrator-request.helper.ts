@@ -2,8 +2,9 @@ require("../db_config");
 import { Request, Response } from "express";
 import { compare, hash } from "bcrypt";
 import Administrator from "../models/administrator.helper";
-import generateToken from "../../helpers/token-generator.helper";
+import generateToken from "../../utils/token-generator.helper";
 import { validate } from "email-validator";
+import { isAdministratorAssignedToProblem } from "./problem-request.helper";
 export const getAdmins = async (req: Request, res: Response) => {
 
     interface IAdministrator {
@@ -90,7 +91,7 @@ export const changeEmail = async (req: Request, res: Response) => {
 
 export const addNewAdministrator = async (req: Request, res: Response) => {
     try {
-        if (!req.body.name || !req.body.email || !req.body.password) throw new Error();
+        if (!req.body.name || !req.body.email || !req.body.password) throw new Error;
 
         console.log(req.body.password);
 
@@ -107,3 +108,17 @@ export const addNewAdministrator = async (req: Request, res: Response) => {
         res.sendStatus(503);
     }
 };
+
+export const deleteAdministrator = async (req: Request, res: Response) => {
+    try {
+        if(!req.body.AdministratorID) throw new Error("No ID provided");
+
+        if(await isAdministratorAssignedToProblem(req.body.AdministratorID)) throw new Error;
+
+        await Administrator.findByIdAndDelete(req.body.AdministratorID);
+        res.sendStatus(200)
+    } catch (error) {
+        console.log(error)
+        res.sendStatus(503)
+    }
+}

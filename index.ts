@@ -13,10 +13,10 @@ import {
     takeOnProblem,
     updateProblem,
 } from "./db/helpers/problem-request.helper";
-import { addNewAdministrator, changeEmail, changePassword, getAdmins, login } from "./db/helpers/administrator-request.helper";
+import { addNewAdministrator, changeEmail, changePassword, deleteAdministrator, getAdmins, login } from "./db/helpers/administrator-request.helper";
 import { deleteComment, getCommentsToProblem, insertCommentToProblem } from "./db/helpers/comment-request.helper";
 import { sendNotifications, subscribe } from "./db/helpers/subscription-request.helper";
-import authenticateToken from "./helpers/token-authentication.helper";
+import authenticateToken from "./utils/token-authentication.helper";
 
 const app: Express = express();
 
@@ -69,7 +69,7 @@ app.put("/change-email", authenticateToken, changeEmail);
 app.delete("/delete-comment", authenticateToken, deleteComment);
 app.delete("/delete-category", authenticateToken, deleteCategory);
 app.delete("/delete-place", authenticateToken, deletePlace);
-app.delete("/delete-administrator", authenticateToken);
+app.delete("/delete-administrator", authenticateToken, deleteAdministrator);
 
 app.listen(config.express.port, () => {
     console.log(`[⚡] Server is listening on port: ${config.express.port}!`);
