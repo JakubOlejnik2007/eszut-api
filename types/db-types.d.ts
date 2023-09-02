@@ -16,7 +16,7 @@ export interface IProblem {
     PlaceID: mongoose.Schema.Types.ObjectId,
     who: String,
     what: String,
-    when: Number,
+    when?: Number,
     isSolved: Boolean,
     dateOfSolved?: Number,
     whoSolvedID?: mongoose.Schema.Types.ObjectId,

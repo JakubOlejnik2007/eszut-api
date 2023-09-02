@@ -6,10 +6,12 @@ export const getCommentsToProblem = async (req: Request, res: Response) => {
     try {
         const comments: any = await Comment.find({ProblemID: req.query.ProblemID})
             .populate("AdministratorID", "name").sort({date: 1})
+            console.log(comments)
         const commentsWithFixedForeigns = comments.map((comment: any) => ({
             ...comment._doc,
             administratorName: comment.AdministratorID.name
         }))
+        console.log(commentsWithFixedForeigns)
         res.send(commentsWithFixedForeigns)
     } catch (error) {
         res.send({
@@ -21,28 +23,17 @@ export const getCommentsToProblem = async (req: Request, res: Response) => {
 
 export const insertCommentToProblem = async (req: Request, res: Response) => {
     try {
-        const comment = req.body as IComment;
+        if(!req.body.ProblemID || !req.body.content || !req.body.AdministratorID) throw new Error;
+
+
+        const comment: IComment = {
+            ...req.body, date: Date.now()
+        };
         await Comment.create(comment);
         res.sendStatus(201)
 
     } catch (error) {
         console.log(error)
-        res.status(503)
-        res.send({
-            text: error
-        })
-    }
-}
-
-export const deleteComment = async (req: Request, res: Response) => {
-    console.log(req.body.id)
-    try {
-        await Comment.findByIdAndDelete(req.body.id);
-        res.sendStatus(200)
-    } catch (error) {
-        res.status(503)
-        res.send({
-            text: error
-        })
+        res.sendStatus(503)
     }
 }

@@ -58,7 +58,9 @@ export const getSolvedProblems = async (req: Request, res: Response) => {
 
 export const insertProblem = async (req: Request, res: Response) => {
     try {
-        const problem = req.body as IProblem;
+        const problem: IProblem = {
+            ...req.body, when: Date.now()
+        };
 
         console.log(problem);
         await Problem.create(problem);

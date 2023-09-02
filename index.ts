@@ -14,7 +14,7 @@ import {
     updateProblem,
 } from "./db/helpers/problem-request.helper";
 import { addNewAdministrator, changeEmail, changePassword, deleteAdministrator, getAdmins, login } from "./db/helpers/administrator-request.helper";
-import { deleteComment, getCommentsToProblem, insertCommentToProblem } from "./db/helpers/comment-request.helper";
+import { getCommentsToProblem, insertCommentToProblem } from "./db/helpers/comment-request.helper";
 import { sendNotifications, subscribe } from "./db/helpers/subscription-request.helper";
 import authenticateToken from "./utils/token-authentication.helper";
 
@@ -50,9 +50,8 @@ app.get("/get-admins", authenticateToken, getAdmins);
 app.get("/get-unsolved-problems", authenticateToken, getUnsolvedProblems);
 app.get("/get-solved-problems", authenticateToken, getSolvedProblems);
 app.get("/get-comments", authenticateToken, getCommentsToProblem);
-app.get("/get-admins", authenticateToken, getAdmins);
 // POST ROUTES
-app.post("/create-comment", insertCommentToProblem);
+app.post("/insert-comment", authenticateToken, insertCommentToProblem);
 app.post("/insert-category", authenticateToken, insertCategory);
 app.post("/insert-place", authenticateToken, insertPlace);
 app.post("/add-new-administrator", authenticateToken, addNewAdministrator)
@@ -66,7 +65,6 @@ app.put("/change-password", authenticateToken, changePassword);
 app.put("/change-email", authenticateToken, changeEmail);
 
 // DELETE ROUTES
-app.delete("/delete-comment", authenticateToken, deleteComment);
 app.delete("/delete-category", authenticateToken, deleteCategory);
 app.delete("/delete-place", authenticateToken, deletePlace);
 app.delete("/delete-administrator", authenticateToken, deleteAdministrator);
