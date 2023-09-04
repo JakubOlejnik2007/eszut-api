@@ -36,3 +36,12 @@ export const deletePlace = async (req: Request, res: Response) => {
         res.sendStatus(503);
     }
 };
+
+export const getPlaceName = async(id: string) => {
+    try {
+        const place = await Place.findById(id);
+        return (place ? place.name : "");
+    } catch {
+        return ""
+    }
+}

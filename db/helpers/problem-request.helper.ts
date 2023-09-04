@@ -3,6 +3,11 @@ import Problem from "../models/problem.helper";
 import { Request, Response } from "express";
 import { sendNotifications } from "./subscription-request.helper";
 import Administrator from "../models/administrator.helper";
+import { getCategoryName } from "./category-request.helper";
+import { TProblemToSendEmail } from "../../types/email";
+import { getPlaceName } from "./place-request.helper";
+import { getAdministratorsEmails } from "./administrator-request.helper";
+import { sendEmailsAboutNewProblem } from "../../utils/send-emails";
 
 export const getUnsolvedProblems = async (req: Request, res: Response) => {
     try {
@@ -26,11 +31,10 @@ export const getUnsolvedProblems = async (req: Request, res: Response) => {
 };
 
 export const getSolvedProblems = async (req: Request, res: Response) => {
-    const page = parseInt(String(req.query.page)) || 1;
-    const perPage = 15;
-    const skip = (page - 1) * perPage;
-
     try {
+        const page = parseInt(String(req.query.page)) || 1;
+        const perPage = 15;
+        const skip = (page - 1) * perPage;
         const totalCount = await Problem.countDocuments({ isSolved: true });
         const problems = await Problem.find({ isSolved: true })
             .sort("priority")
@@ -59,12 +63,29 @@ export const getSolvedProblems = async (req: Request, res: Response) => {
 export const insertProblem = async (req: Request, res: Response) => {
     try {
         const problem: IProblem = {
-            ...req.body, when: Date.now()
+            ...req.body,
+            when: Date.now(),
         };
 
-        console.log(problem);
-        await Problem.create(problem);
+        const createdProblem = await Problem.create(problem);
+
+        const emails = await getAdministratorsEmails()
+        const categoryName = await getCategoryName(createdProblem.CategoryID.toString());
+        const problemName = await getPlaceName(createdProblem.PlaceID.toString())
+        const problemToSend: TProblemToSendEmail = {
+            _id: createdProblem._id.toString(),
+            priority: createdProblem.priority,
+            what: createdProblem.what,
+            when: createdProblem.when,
+            who: createdProblem.who,
+            where: problemName,
+            categoryName
+        }
+
+        sendEmailsAboutNewProblem(problemToSend, emails)
+
         sendNotifications();
+        
         res.sendStatus(200);
     } catch {
         res.sendStatus(503);
@@ -147,23 +168,23 @@ export const markProblemAsUnsolved = async (req: Request, res: Response) => {
     }
 };
 
-export const isCategoryUsed = async (CategoryID: string): Promise<boolean> => Boolean(await Problem.findOne({CategoryID}));
-export const isPlaceUsed = async (PlaceID: string): Promise<boolean> => Boolean(await Problem.findOne({PlaceID}));
+export const isCategoryUsed = async (CategoryID: string): Promise<boolean> =>
+    Boolean(await Problem.findOne({ CategoryID }));
+export const isPlaceUsed = async (PlaceID: string): Promise<boolean> => Boolean(await Problem.findOne({ PlaceID }));
 
-export const isAdministratorAssignedToProblem = async (AdministratorID: string): Promise<boolean | Error>  => {
-
-        const problems = await Problem.find({
-          $or: [
+export const isAdministratorAssignedToProblem = async (AdministratorID: string): Promise<boolean | Error> => {
+    const problems = await Problem.find({
+        $or: [
             {
-              whoDealsID: AdministratorID,
-              isUnderRealization: true,
+                whoDealsID: AdministratorID,
+                isUnderRealization: true,
             },
             {
-              whoSolvedID: AdministratorID,
-              isSolved: true,
+                whoSolvedID: AdministratorID,
+                isSolved: true,
             },
-          ],
-        });
+        ],
+    });
 
-        return problems.length > 0 ? true : false;
-}
+    return problems.length > 0 ? true : false;
+};

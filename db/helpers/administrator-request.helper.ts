@@ -5,6 +5,7 @@ import Administrator from "../models/administrator.helper";
 import generateToken from "../../utils/token-generator.helper";
 import { validate } from "email-validator";
 import { isAdministratorAssignedToProblem } from "./problem-request.helper";
+import { IAdministrator } from "../../types/db-types";
 export const getAdmins = async (req: Request, res: Response) => {
 
     interface IAdministrator {
@@ -48,7 +49,6 @@ export const login = async (req: Request, res: Response) => {
         }
     } catch (error) {
         res.sendStatus(503);
-        console.log(error)
     }
 };
 
@@ -93,8 +93,6 @@ export const addNewAdministrator = async (req: Request, res: Response) => {
     try {
         if (!req.body.name || !req.body.email || !req.body.password) throw new Error;
 
-        console.log(req.body.password);
-
         const hashedPassword = await hash(req.body.password, 10);
         const admin = {
             name: req.body.name,
@@ -117,8 +115,16 @@ export const deleteAdministrator = async (req: Request, res: Response) => {
 
         await Administrator.findByIdAndDelete(req.body.AdministratorID);
         res.sendStatus(200)
-    } catch (error) {
-        console.log(error)
+    } catch {
         res.sendStatus(503)
+    }
+}
+
+export const getAdministratorsEmails = async () => {
+    try {
+        const administrators: IAdministrator[] = await Administrator.find({});
+        return administrators.map((administrator: IAdministrator) => administrator.email)
+    } catch {
+        return []
     }
 }

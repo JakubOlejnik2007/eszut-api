@@ -36,9 +36,8 @@ export const sendNotifications = async () => {
             body: "Temporary body",
         };
         for (const subscription of subscriptions) {
-            webPush.sendNotification(subscription, JSON.stringify(payload)).catch((error) => {console.log(error)});
+            webPush.sendNotification(subscription, JSON.stringify(payload)).catch((error) => {});
         }
-    } catch (error) {
-        console.log(error);
+    } catch {
     }
 };

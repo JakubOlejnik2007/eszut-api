@@ -17,6 +17,7 @@ import { addNewAdministrator, changeEmail, changePassword, deleteAdministrator, 
 import { getCommentsToProblem, insertCommentToProblem } from "./db/helpers/comment-request.helper";
 import { sendNotifications, subscribe } from "./db/helpers/subscription-request.helper";
 import authenticateToken from "./utils/token-authentication.helper";
+import { getLogData } from "./db/helpers/log-request.helper";
 
 const app: Express = express();
 
@@ -50,6 +51,8 @@ app.get("/get-admins", authenticateToken, getAdmins);
 app.get("/get-unsolved-problems", authenticateToken, getUnsolvedProblems);
 app.get("/get-solved-problems", authenticateToken, getSolvedProblems);
 app.get("/get-comments", authenticateToken, getCommentsToProblem);
+app.get("/get-logs", authenticateToken, getLogData);
+
 // POST ROUTES
 app.post("/insert-comment", authenticateToken, insertCommentToProblem);
 app.post("/insert-category", authenticateToken, insertCategory);

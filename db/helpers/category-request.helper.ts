@@ -34,3 +34,12 @@ export const deleteCategory = async (req: Request, res: Response) => {
         res.sendStatus(503);
     }
 };
+
+export const getCategoryName = async (id: string) => {
+    try {
+        const category = await Category.findById(id);
+        return (category ? category.name : "");
+    } catch (error) {
+        return "";
+    }
+}
