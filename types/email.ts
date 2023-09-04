@@ -7,3 +7,9 @@ export type TProblemToSendEmail = {
     when: number,
     categoryName: string,
 }
+
+export type TAdministratorToSendEmail = {
+    id: string,
+    name: string,
+    email: string
+}

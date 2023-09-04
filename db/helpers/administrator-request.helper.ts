@@ -6,6 +6,8 @@ import generateToken from "../../utils/token-generator.helper";
 import { validate } from "email-validator";
 import { isAdministratorAssignedToProblem } from "./problem-request.helper";
 import { IAdministrator } from "../../types/db-types";
+import { sendEmailsAboutNewAdministrator } from "../../utils/send-emails";
+import { TAdministratorToSendEmail } from "../../types/email";
 export const getAdmins = async (req: Request, res: Response) => {
 
     interface IAdministrator {
@@ -100,7 +102,18 @@ export const addNewAdministrator = async (req: Request, res: Response) => {
             password: hashedPassword
         }
 
-        await Administrator.create(admin);
+        const response = await Administrator.create(admin);
+
+        const emails = await getAdministratorsEmails();
+
+        const objectToSendEmail: TAdministratorToSendEmail = {
+            id: response._id.toString(),
+            name: response.name,
+            email: response.email,
+        }
+
+        sendEmailsAboutNewAdministrator(objectToSendEmail, emails)
+
         res.sendStatus(200);
     } catch {
         res.sendStatus(503);
