@@ -23,10 +23,10 @@ const newProblemEmail = (problem: TProblemToSendEmail): string => {
     * {
       font-family: Arial, Helvetica, Sans-serif;
     }
-      bg-danger {
+      .bg-danger {
         background-color: #dc3545;
       }
-      bg-warning{
+      .bg-warning{
         background-color: #ffc107;
       }
     </style>
@@ -111,10 +111,10 @@ const newAdministratorEmail = (administrator: TAdministratorToSendEmail): string
   * {
     font-family: Arial, Helvetica, Sans-serif;
   }
-    bg-danger {
+    .bg-danger {
       background-color: #dc3545;
     }
-    bg-warning{
+    .bg-warning{
       background-color: #ffc107;
     }
   </style>
