@@ -32,8 +32,8 @@ export const sendNotifications = async () => {
     try {
         const subscriptions = (await getSubscriptions()) satisfies ISubscription[];
         const payload = {
-            title: "test notif",
-            body: "Temporary body",
+            title: "Administratorze!",
+            body: "Nowe zgłoszenie w bazie danych.",
         };
         for (const subscription of subscriptions) {
             webPush.sendNotification(subscription, JSON.stringify(payload)).catch((error) => {});

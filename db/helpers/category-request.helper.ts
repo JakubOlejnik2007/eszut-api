@@ -14,7 +14,7 @@ export const getCategories = async (req: Request, res: Response) => {
 
 export const insertCategory = async (req: Request, res: Response) => {
     try {
-        if (!req.body.name) throw new Error();
+        if (!req.body.name || !req.body.priority) throw new Error();
         Category.create(req.body);
         res.sendStatus(200);
     } catch {
@@ -39,6 +39,15 @@ export const getCategoryName = async (id: string) => {
     try {
         const category = await Category.findById(id);
         return (category ? category.name : "");
+    } catch (error) {
+        return "";
+    }
+}
+
+export const getCategoryDefaultPriority = async (id: string) => {
+    try {
+        const category = await Category.findById(id);
+        return (category ? category.priority : "");
     } catch (error) {
         return "";
     }

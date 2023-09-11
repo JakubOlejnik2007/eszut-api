@@ -2,8 +2,7 @@ import { IProblem } from "../../types/db-types";
 import Problem from "../models/problem.helper";
 import { Request, Response } from "express";
 import { sendNotifications } from "./subscription-request.helper";
-import Administrator from "../models/administrator.helper";
-import { getCategoryName } from "./category-request.helper";
+import { getCategoryDefaultPriority, getCategoryName } from "./category-request.helper";
 import { TProblemToSendEmail } from "../../types/email";
 import { getPlaceName } from "./place-request.helper";
 import { getAdministratorsEmails } from "./administrator-request.helper";
@@ -62,10 +61,15 @@ export const getSolvedProblems = async (req: Request, res: Response) => {
 
 export const insertProblem = async (req: Request, res: Response) => {
     try {
+        const defaultPriorityForCategory = await getCategoryDefaultPriority(req.body.CategoryID)
+        
         const problem: IProblem = {
             ...req.body,
+            priority: defaultPriorityForCategory,
             when: Date.now(),
         };
+
+
 
         const createdProblem = await Problem.create(problem);
 
@@ -146,7 +150,6 @@ export const markProblemAsSolved = async (req: Request, res: Response) => {
         await problem.save();
         res.sendStatus(200);
     } catch (error) {
-        console.log(error);
         res.sendStatus(503);
     }
 };
@@ -163,7 +166,6 @@ export const markProblemAsUnsolved = async (req: Request, res: Response) => {
         await problem.save();
         res.sendStatus(200);
     } catch (error) {
-        console.log(error);
         res.sendStatus(503);
     }
 };
