@@ -3,9 +3,7 @@ export type TConfigData = {
         port: number;
     };
     MongoDB: {
-        host: string;
-        port: number;
-        name: string;
+        url: string;
     };
     mail: {
         service: string;

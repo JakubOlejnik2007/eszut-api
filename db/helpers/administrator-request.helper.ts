@@ -50,6 +50,7 @@ export const login = async (req: Request, res: Response) => {
             throw new Error("Invalid user data!");
         }
     } catch (error) {
+        console.log(error)
         res.sendStatus(503);
     }
 };

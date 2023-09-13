@@ -1,16 +1,18 @@
 import mongoose from "mongoose";
 import Administrator from "../db/models/administrator.helper";
 import config from "../config";
+import { hash } from "bcrypt";
 
-const url: string = `mongodb://${config.MongoDB.host}:${config.MongoDB.port}/${config.MongoDB.name}`;
+
+
 
 const createUser = async () => {
-    mongoose.connect(url);
+    mongoose.connect(config.MongoDB.url);
 
     try {
         const rootAdmin = new Administrator({
             name: "root",
-            password: "$2y$10$A6s/cJJezaQLokO.KQMUp.A0PlRI1ZC5HVXUrn1SyUmaDJYT3rK4W",
+            password: await hash("admin", 10),
             email: "admin@admin.pl",
         });
         rootAdmin.save();
