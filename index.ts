@@ -18,6 +18,7 @@ import { getCommentsToProblem, insertCommentToProblem } from "./db/helpers/comme
 import { sendNotifications, subscribe } from "./db/helpers/subscription-request.helper";
 import authenticateToken from "./utils/token-authentication.helper";
 import { getLogData } from "./db/helpers/log-request.helper";
+import { setNewPIN } from "./db/helpers/pin-request";
 
 const app: Express = express();
 
@@ -66,6 +67,7 @@ app.put("/mark-problem-as-solved", authenticateToken, markProblemAsSolved);
 app.put("/mark-problem-as-unsolved", authenticateToken, markProblemAsUnsolved);
 app.put("/change-password", authenticateToken, changePassword);
 app.put("/change-email", authenticateToken, changeEmail);
+app.put("/new-pin", authenticateToken, setNewPIN);
 
 // DELETE ROUTES
 app.delete("/delete-category", authenticateToken, deleteCategory);

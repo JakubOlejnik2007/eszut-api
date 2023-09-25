@@ -7,6 +7,7 @@ import { TProblemToSendEmail } from "../../types/email";
 import { getPlaceName } from "./place-request.helper";
 import { getAdministratorsEmails } from "./administrator-request.helper";
 import { sendEmailsAboutNewProblem } from "../../utils/send-emails";
+import { getPIN } from "./pin-request";
 
 export const getUnsolvedProblems = async (req: Request, res: Response) => {
     try {
@@ -61,12 +62,13 @@ export const getSolvedProblems = async (req: Request, res: Response) => {
 
 export const insertProblem = async (req: Request, res: Response) => {
     try {
+        if(req.body.pin !== await getPIN()) throw new Error();
+
         const defaultPriorityForCategory = await getCategoryDefaultPriority(req.body.CategoryID)
         
         const problem: IProblem = {
             ...req.body,
             priority: defaultPriorityForCategory,
-            when: Date.now(),
         };
 
 
@@ -91,7 +93,7 @@ export const insertProblem = async (req: Request, res: Response) => {
         sendNotifications();
         
         res.sendStatus(200);
-    } catch {
+    } catch (e) {
         res.sendStatus(503);
     }
 };
