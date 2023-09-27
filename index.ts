@@ -4,6 +4,7 @@ import config from "./config";
 import { deleteCategory, getCategories, insertCategory } from "./db/helpers/category-request.helper";
 import { deletePlace, getPlaces, insertPlace } from "./db/helpers/place-request.helper";
 import {
+    deleteProblems,
     getSolvedProblems,
     getUnsolvedProblems,
     insertProblem,
@@ -18,7 +19,6 @@ import { getCommentsToProblem, insertCommentToProblem } from "./db/helpers/comme
 import { sendNotifications, subscribe } from "./db/helpers/subscription-request.helper";
 import authenticateToken from "./utils/token-authentication.helper";
 import { getLogData } from "./db/helpers/log-request.helper";
-import { setNewPIN } from "./db/helpers/pin-request";
 
 const app: Express = express();
 
@@ -67,12 +67,12 @@ app.put("/mark-problem-as-solved", authenticateToken, markProblemAsSolved);
 app.put("/mark-problem-as-unsolved", authenticateToken, markProblemAsUnsolved);
 app.put("/change-password", authenticateToken, changePassword);
 app.put("/change-email", authenticateToken, changeEmail);
-app.put("/new-pin", authenticateToken, setNewPIN);
 
 // DELETE ROUTES
 app.delete("/delete-category", authenticateToken, deleteCategory);
 app.delete("/delete-place", authenticateToken, deletePlace);
 app.delete("/delete-administrator", authenticateToken, deleteAdministrator);
+app.delete("/delete-problems", authenticateToken, deleteProblems)
 
 app.listen(config.express.port, () => {
     console.log(`[⚡] Server is listening on port: ${config.express.port}!`);
