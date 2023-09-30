@@ -7,7 +7,6 @@ import { TProblemToSendEmail } from "../../types/email";
 import { getPlaceName } from "./place-request.helper";
 import { getAdministratorsEmails } from "./administrator-request.helper";
 import { sendEmailsAboutNewProblem } from "../../utils/send-emails";
-import { getPIN } from "./pin-request";
 
 export const getUnsolvedProblems = async (req: Request, res: Response) => {
     try {
@@ -62,22 +61,19 @@ export const getSolvedProblems = async (req: Request, res: Response) => {
 
 export const insertProblem = async (req: Request, res: Response) => {
     try {
-        if(req.body.pin !== await getPIN()) throw new Error();
+        const defaultPriorityForCategory = await getCategoryDefaultPriority(req.body.CategoryID);
 
-        const defaultPriorityForCategory = await getCategoryDefaultPriority(req.body.CategoryID)
-        
         const problem: IProblem = {
             ...req.body,
             priority: defaultPriorityForCategory,
+            when: Date.now(),
         };
-
-
 
         const createdProblem = await Problem.create(problem);
 
-        const emails = await getAdministratorsEmails()
+        const emails = await getAdministratorsEmails();
         const categoryName = await getCategoryName(createdProblem.CategoryID.toString());
-        const problemName = await getPlaceName(createdProblem.PlaceID.toString())
+        const problemName = await getPlaceName(createdProblem.PlaceID.toString());
         const problemToSend: TProblemToSendEmail = {
             _id: createdProblem._id.toString(),
             priority: createdProblem.priority,
@@ -85,15 +81,15 @@ export const insertProblem = async (req: Request, res: Response) => {
             when: createdProblem.when,
             who: createdProblem.who,
             where: problemName,
-            categoryName
-        }
+            categoryName,
+        };
 
-        sendEmailsAboutNewProblem(problemToSend, emails)
+        sendEmailsAboutNewProblem(problemToSend, emails);
 
         sendNotifications();
-        
+
         res.sendStatus(200);
-    } catch (e) {
+    } catch {
         res.sendStatus(503);
     }
 };
@@ -191,4 +187,15 @@ export const isAdministratorAssignedToProblem = async (AdministratorID: string):
     });
 
     return problems.length > 0 ? true : false;
+};
+
+export const deleteProblems = async (req: Request, res: Response) => {
+    try {
+        req.body.problems.forEach(async (item: FormDataEntryValue) => {
+            await Problem.findByIdAndDelete(item);
+        });
+        res.sendStatus(200);
+    } catch {
+        res.sendStatus(503);
+    }
 };
