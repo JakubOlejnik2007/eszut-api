@@ -17,10 +17,13 @@ export const getAdmins = async (req: Request, res: Response) => {
         password: string;
     }
 
+    console.log(req.body.userrole)
+    console.log(req.body.userGroups)
+
     try {
         const administrators: any = await Administrator.find({});
         res.status(200);
-        res.send(administrators.map((admin: IAdministrator)  => {
+        res.send(administrators.map((admin: IAdministrator) => {
             return {
                 _id: admin._id,
                 name: admin.name,
@@ -123,9 +126,9 @@ export const addNewAdministrator = async (req: Request, res: Response) => {
 
 export const deleteAdministrator = async (req: Request, res: Response) => {
     try {
-        if(!req.body.AdministratorID) throw new Error("No ID provided");
+        if (!req.body.AdministratorID) throw new Error("No ID provided");
 
-        if(await isAdministratorAssignedToProblem(req.body.AdministratorID)) throw new Error;
+        if (await isAdministratorAssignedToProblem(req.body.AdministratorID)) throw new Error;
 
         await Administrator.findByIdAndDelete(req.body.AdministratorID);
         res.sendStatus(200)
