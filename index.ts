@@ -53,6 +53,9 @@ app.get("/get-unsolved-problems", authenticateToken, getUnsolvedProblems);
 app.get("/get-solved-problems", authenticateToken, getSolvedProblems);
 app.get("/get-comments", authenticateToken, getCommentsToProblem);
 app.get("/get-logs", authenticateToken, getLogData);
+app.get("/get-user-role", authenticateToken, (req, res) => {
+    res.send({ role: req.body.userrole });
+})
 
 // POST ROUTES
 app.post("/insert-comment", authenticateToken, insertCommentToProblem);
