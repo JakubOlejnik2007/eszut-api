@@ -22,5 +22,9 @@ export type TConfigData = {
         tenant: string;
         client: string;
         secret: string;
-    }
+    };
+    authTeams: {
+        admins: string;
+        teachers: string;
+    };
 };
