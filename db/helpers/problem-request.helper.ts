@@ -79,7 +79,8 @@ export const insertProblem = async (req: Request, res: Response) => {
             priority: createdProblem.priority,
             what: createdProblem.what,
             when: createdProblem.when,
-            who: createdProblem.who,
+            whoName: createdProblem.whoName,
+            whoEmail: createdProblem.whoEmail,
             where: problemName,
             categoryName,
         };

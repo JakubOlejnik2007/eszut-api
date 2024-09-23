@@ -10,7 +10,11 @@ const Problem = mongoose.model('Problem', new mongoose.Schema({
         ref: "Place",
         required: true
     },
-    who: {
+    whoName: {
+        type: String,
+        required: true
+    },
+    whoEmail: {
         type: String,
         required: true
     },
@@ -19,11 +23,11 @@ const Problem = mongoose.model('Problem', new mongoose.Schema({
         required: true
     },
     when: {
-        type:Number,
+        type: Number,
         required: true,
         default: Date.now()
     },
-    isSolved:{
+    isSolved: {
         type: Boolean,
         required: true,
         default: false
@@ -40,7 +44,7 @@ const Problem = mongoose.model('Problem', new mongoose.Schema({
     isUnderRealization: {
         type: Boolean,
         required: true,
-        default: false        
+        default: false
     },
     whoDealsID: {
         type: mongoose.Schema.Types.ObjectId,

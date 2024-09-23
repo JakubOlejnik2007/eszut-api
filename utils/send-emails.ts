@@ -8,17 +8,17 @@ import Administrator from "../db/models/administrator.helper";
 const { mail } = config;
 
 const transporter = createTransport({
-    service: mail.service,
-    auth: {
-        user: mail.user + "dasdas",
-        pass: mail.pass,
-    },
+  service: mail.service,
+  auth: {
+    user: mail.user + "dasdas",
+    pass: mail.pass,
+  },
 });
 
 const newProblemEmail = (problem: TProblemToSendEmail): string => {
-    const deadline = new Date(problem.when + 43_200_000 * 2 ** (problem.priority - 1));
+  const deadline = new Date(problem.when + 43_200_000 * 2 ** (problem.priority - 1));
 
-    return `<head>
+  return `<head>
     <style>
     * {
       font-family: Arial, Helvetica, Sans-serif;
@@ -36,8 +36,7 @@ const newProblemEmail = (problem: TProblemToSendEmail): string => {
    <p>W bazie danych pojawiło się nowe zgłoszenie.</p>
    <table>
       <tr>
-         <td colspan="2" class="${problem.priority === 1 ? "bg-danger" : ""} ${
-        problem.priority === 2 ? "bg-warning" : ""
+         <td colspan="2" class="${problem.priority === 1 ? "bg-danger" : ""} ${problem.priority === 2 ? "bg-warning" : ""
     }">&nbsp;</td>
       </tr>
       <tr>
@@ -61,7 +60,7 @@ const newProblemEmail = (problem: TProblemToSendEmail): string => {
       </tr>
       <tr>
          <td>Zgłaszający</td>
-         <td>${problem.who}</td>
+         <td>${problem.whoName} (${problem.whoEmail})</td>
       </tr>
       <tr>
          <td>Data zgłoszenia</td>
@@ -77,32 +76,32 @@ const newProblemEmail = (problem: TProblemToSendEmail): string => {
 };
 
 export const sendEmailsAboutNewProblem = (problem: TProblemToSendEmail, emails: string[]) => {
-    const transporter = createTransport({
-        service: mail.service,
-        auth: {
-            user: mail.user,
-            pass: mail.pass,
-        },
-    });
-    const generatedEmailContent: string = newProblemEmail(problem);
+  const transporter = createTransport({
+    service: mail.service,
+    auth: {
+      user: mail.user,
+      pass: mail.pass,
+    },
+  });
+  const generatedEmailContent: string = newProblemEmail(problem);
 
-    emails.forEach(async (email: string) => {
-        const mailOptions = {
-            from: mail.user,
-            to: email,
-            subject: `[${problem.priority}] Nowe zgłoszenie w bazie danych!`,
-            html: generatedEmailContent,
-        };
-        try {
-            const response = await transporter.sendMail(mailOptions);
-        } catch (error) {
-            writeLog({
-                date: Date.now(),
-                content: `Error: Cannot send mail to ${email}`,
-                error: String(error),
-            });
-        }
-    });
+  emails.forEach(async (email: string) => {
+    const mailOptions = {
+      from: mail.user,
+      to: email,
+      subject: `[${problem.priority}] Nowe zgłoszenie w bazie danych!`,
+      html: generatedEmailContent,
+    };
+    try {
+      const response = await transporter.sendMail(mailOptions);
+    } catch (error) {
+      writeLog({
+        date: Date.now(),
+        content: `Error: Cannot send mail to ${email}`,
+        error: String(error),
+      });
+    }
+  });
 };
 
 const newAdministratorEmail = (administrator: TAdministratorToSendEmail): string => {
@@ -137,29 +136,29 @@ const newAdministratorEmail = (administrator: TAdministratorToSendEmail): string
 
 export const sendEmailsAboutNewAdministrator = (administrator: TAdministratorToSendEmail, emails: string[]) => {
   const transporter = createTransport({
-      service: mail.service,
-      auth: {
-          user: mail.user,
-          pass: mail.pass,
-      },
+    service: mail.service,
+    auth: {
+      user: mail.user,
+      pass: mail.pass,
+    },
   });
   const generatedEmailContent: string = newAdministratorEmail(administrator);
 
   emails.forEach(async (email: string) => {
-      const mailOptions = {
-          from: mail.user,
-          to: email,
-          subject: `[${administrator.name}] Nowy administrator!`,
-          html: generatedEmailContent,
-      };
-      try {
-          const response = await transporter.sendMail(mailOptions);
-      } catch (error) {
-          writeLog({
-              date: Date.now(),
-              content: `Error: Cannot send mail to ${email}`,
-              error: String(error),
-          });
-      }
+    const mailOptions = {
+      from: mail.user,
+      to: email,
+      subject: `[${administrator.name}] Nowy administrator!`,
+      html: generatedEmailContent,
+    };
+    try {
+      const response = await transporter.sendMail(mailOptions);
+    } catch (error) {
+      writeLog({
+        date: Date.now(),
+        content: `Error: Cannot send mail to ${email}`,
+        error: String(error),
+      });
+    }
   });
 };
