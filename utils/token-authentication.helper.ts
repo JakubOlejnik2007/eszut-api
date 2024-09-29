@@ -62,6 +62,7 @@ const authenticateToken = async (req: Request, res: Response, next: NextFunction
     } catch (err) {
         console.error(err);
         res.sendStatus(401);
+        return;
     }
 };
 

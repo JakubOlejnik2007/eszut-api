@@ -3,6 +3,7 @@ import Category from "../models/category.helper";
 import { isCategoryUsed } from "./problem-request.helper";
 
 export const getCategories = async (req: Request, res: Response) => {
+    console.log("Get categories")
     try {
         const categories: any = await Category.find({});
         res.status(200);
@@ -27,7 +28,7 @@ export const deleteCategory = async (req: Request, res: Response) => {
         if (!req.body.CategoryID) throw new Error();
 
         if (await isCategoryUsed(req.body.CategoryID)) throw new Error();
-        
+
         await Category.findByIdAndDelete(req.body.CategoryID);
         res.sendStatus(200);
     } catch {
