@@ -20,11 +20,11 @@ export interface IProblem {
     when: number,
     isSolved: boolean,
     dateOfSolved?: number,
-    whoSolvedID?: mongoose.Schema.Types.ObjectId,
-    whoSolved?: string,
+    whoSolvedEmail?: string,
+    whoSolvedName?: string,
     isUnderRealization: boolean,
-    whoDealsID?: mongoose.Schema.Types.ObjectId,
-    whoDeals?: string,
+    whoDealsName?: string,
+    whoDealsEmail?: string,
     CategoryID: mongoose.Schema.Types.ObjectId
 }
 
