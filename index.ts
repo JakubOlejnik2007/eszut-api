@@ -19,6 +19,8 @@ import { getCommentsToProblem, insertCommentToProblem } from "./db/helpers/comme
 import authenticateToken from "./utils/token-authentication.helper";
 import { getLogData } from "./db/helpers/log-request.helper";
 
+require("./db/db_config");
+
 const app: Express = express();
 
 app.use(express.json());

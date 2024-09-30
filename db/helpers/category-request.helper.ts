@@ -8,7 +8,8 @@ export const getCategories = async (req: Request, res: Response) => {
         const categories: any = await Category.find({});
         res.status(200);
         res.send(categories);
-    } catch {
+    } catch (e) {
+        console.log(e)
         res.sendStatus(503);
     }
 };
