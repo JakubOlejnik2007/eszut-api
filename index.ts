@@ -16,7 +16,6 @@ import {
 } from "./db/helpers/problem-request.helper";
 import { addNewAdministrator, changeEmail, changePassword, deleteAdministrator, getAdmins, login } from "./db/helpers/administrator-request.helper";
 import { getCommentsToProblem, insertCommentToProblem } from "./db/helpers/comment-request.helper";
-import { sendNotifications, subscribe } from "./db/helpers/subscription-request.helper";
 import authenticateToken from "./utils/token-authentication.helper";
 import { getLogData } from "./db/helpers/log-request.helper";
 
@@ -32,12 +31,10 @@ app.use(cors());
 // GET ROUTES
 app.get("/get-categories", getCategories);
 app.get("/get-places", getPlaces);
-app.get("/send-notification", sendNotifications);
 
 // POST ROUTES
 app.post("/report-problem", insertProblem);
 app.post("/login", login);
-app.post("/subscribe", subscribe);
 
 // UPDATE ROUTES
 
@@ -61,15 +58,12 @@ app.get("/get-user-role", authenticateToken, (req, res) => {
 app.post("/insert-comment", authenticateToken, insertCommentToProblem);
 app.post("/insert-category", authenticateToken, insertCategory);
 app.post("/insert-place", authenticateToken, insertPlace);
-app.post("/add-new-administrator", authenticateToken, addNewAdministrator)
 // UPDATE ROUTES
 app.put("/update-problem", authenticateToken, updateProblem);
 app.put("/take-on-problem", authenticateToken, takeOnProblem);
 app.put("/reject-problem", authenticateToken, rejectProblem);
 app.put("/mark-problem-as-solved", authenticateToken, markProblemAsSolved);
 app.put("/mark-problem-as-unsolved", authenticateToken, markProblemAsUnsolved);
-app.put("/change-password", authenticateToken, changePassword);
-app.put("/change-email", authenticateToken, changeEmail);
 
 // DELETE ROUTES
 app.delete("/delete-category", authenticateToken, deleteCategory);

@@ -36,9 +36,12 @@ const Problem = mongoose.model('Problem', new mongoose.Schema({
         type: Number,
         required: false,
     },
-    whoSolvedID: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Administrator",
+    whoSolvedName: {
+        type: String,
+        required: false
+    },
+    whoSolvedEmail: {
+        type: String,
         required: false
     },
     isUnderRealization: {
@@ -46,9 +49,12 @@ const Problem = mongoose.model('Problem', new mongoose.Schema({
         required: true,
         default: false
     },
-    whoDealsID: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Administrator",
+    whoDealsName: {
+        type: String,
+        required: false
+    },
+    whoDealsEmail: {
+        type: String,
         required: false
     },
     CategoryID: {

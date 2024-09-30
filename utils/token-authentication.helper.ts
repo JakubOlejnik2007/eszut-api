@@ -57,6 +57,8 @@ const authenticateToken = async (req: Request, res: Response, next: NextFunction
             return;
         }
         req.body.userGroups = userGroups
+        req.body.userdata = decodedToken
+        console.log(decodedToken)
 
         next();
     } catch (err) {

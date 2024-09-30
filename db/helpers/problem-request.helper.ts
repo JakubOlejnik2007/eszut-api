@@ -1,7 +1,6 @@
 import { IProblem } from "../../types/db-types";
 import Problem from "../models/problem.helper";
 import { Request, Response } from "express";
-import { sendNotifications } from "./subscription-request.helper";
 import { getCategoryDefaultPriority, getCategoryName } from "./category-request.helper";
 import { TProblemToSendEmail } from "../../types/email";
 import { getPlaceName } from "./place-request.helper";
@@ -11,16 +10,13 @@ import { sendEmailsAboutNewProblem } from "../../utils/send-emails";
 export const getUnsolvedProblems = async (req: Request, res: Response) => {
     try {
         const problems: any = await Problem.find({ isSolved: false })
-            .sort("priority")
+            .sort({ priority: 1, when: 1 })
             .populate("CategoryID", "name")
             .populate("PlaceID", "name")
-            .populate("whoDealsID", "name");
         const problemsWithCategoryName = problems.map((problem: any) => ({
             ...problem._doc,
             categoryName: problem.CategoryID.name,
-            placeName: problem.PlaceID.name,
-            whoDeals: problem.whoDealsID ? problem.whoDealsID.name : "",
-            whoDealsID: problem.whoDealsID ? problem.whoDealsID._id : "",
+            placeName: problem.PlaceID.name
         }));
         res.status(200);
         res.send(problemsWithCategoryName);
@@ -87,8 +83,6 @@ export const insertProblem = async (req: Request, res: Response) => {
 
         sendEmailsAboutNewProblem(problemToSend, emails);
 
-        sendNotifications();
-
         res.sendStatus(200);
     } catch {
         res.sendStatus(503);
@@ -109,12 +103,13 @@ export const updateProblem = async (req: Request, res: Response) => {
 
 export const takeOnProblem = async (req: Request, res: Response) => {
     try {
-        if (!req.body.AdministratorID || !req.body.ProblemID) throw new Error();
+        if (!req.body.ProblemID) throw new Error();
         const problem = await Problem.findById(req.body.ProblemID);
         if (!problem) throw new Error();
         if (problem.isUnderRealization) throw new Error();
         problem.isUnderRealization = true;
-        problem.whoDealsID = req.body.AdministratorID;
+        problem.whoDealsEmail = req.body.userdata.upn;
+        problem.whoDealsName = req.body.userdata.name;``
         await problem.save();
         res.sendStatus(200);
     } catch {
@@ -144,7 +139,7 @@ export const markProblemAsSolved = async (req: Request, res: Response) => {
         if (!problem.isUnderRealization) throw new Error();
         problem.isUnderRealization = false;
         problem.isSolved = true;
-        problem.whoSolvedID = req.body.AdministratorID;
+        //problem.whoSolvedID = req.body.AdministratorID;
         problem.dateOfSolved = Date.now();
         await problem.save();
         res.sendStatus(200);
@@ -161,7 +156,7 @@ export const markProblemAsUnsolved = async (req: Request, res: Response) => {
         if (!problem.isSolved) throw new Error();
         problem.isUnderRealization = true;
         problem.isSolved = false;
-        problem.whoDealsID = req.body.AdministratorID;
+        //problem.whoDealsID = req.body.AdministratorID;
         await problem.save();
         res.sendStatus(200);
     } catch (error) {
