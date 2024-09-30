@@ -28,27 +28,12 @@ export interface IProblem {
     CategoryID: mongoose.Schema.Types.ObjectId
 }
 
-export interface IAdministrator {
-    _id?: mongoose.Schema.Types.ObjectId,
-    name: string,
-    password?: string,
-    email: string
-}
-
 export interface IComment {
     _id?: mongoose.Schema.Types.ObjectId,
     AdministratorID?: mongoose.Schema.Types.ObjectId,
     ProblemID: mongoose.Schema.Types.ObjectId,
     date?: number,
     content: string
-}
-
-export interface ISubscription {
-    endpoint: string;
-    keys: {
-        auth: string;
-        p256dh: string
-    }
 }
 
 export interface IUser {
