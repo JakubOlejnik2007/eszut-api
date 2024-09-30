@@ -4,7 +4,6 @@ import { Request, Response } from "express";
 import { getCategoryDefaultPriority, getCategoryName } from "./category-request.helper";
 import { TProblemToSendEmail } from "../../types/email";
 import { getPlaceName } from "./place-request.helper";
-import { getAdministratorsEmails } from "./administrator-request.helper";
 import { sendEmailsAboutNewProblem } from "../../utils/send-emails";
 
 export const getUnsolvedProblems = async (req: Request, res: Response) => {
@@ -67,7 +66,7 @@ export const insertProblem = async (req: Request, res: Response) => {
 
         const createdProblem = await Problem.create(problem);
 
-        const emails = await getAdministratorsEmails();
+        //const emails = await getAdministratorsEmails();
         const categoryName = await getCategoryName(createdProblem.CategoryID.toString());
         const problemName = await getPlaceName(createdProblem.PlaceID.toString());
         const problemToSend: TProblemToSendEmail = {
@@ -81,7 +80,7 @@ export const insertProblem = async (req: Request, res: Response) => {
             categoryName,
         };
 
-        sendEmailsAboutNewProblem(problemToSend, emails);
+        //sendEmailsAboutNewProblem(problemToSend, emails);
 
         res.sendStatus(200);
     } catch {
@@ -109,7 +108,7 @@ export const takeOnProblem = async (req: Request, res: Response) => {
         if (problem.isUnderRealization) throw new Error();
         problem.isUnderRealization = true;
         problem.whoDealsEmail = req.body.userdata.upn;
-        problem.whoDealsName = req.body.userdata.name;``
+        problem.whoDealsName = req.body.userdata.name; ``
         await problem.save();
         res.sendStatus(200);
     } catch {

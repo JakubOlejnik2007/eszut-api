@@ -14,7 +14,6 @@ import {
     takeOnProblem,
     updateProblem,
 } from "./db/helpers/problem-request.helper";
-import { addNewAdministrator, changeEmail, changePassword, deleteAdministrator, getAdmins, login } from "./db/helpers/administrator-request.helper";
 import { getCommentsToProblem, insertCommentToProblem } from "./db/helpers/comment-request.helper";
 import authenticateToken from "./utils/token-authentication.helper";
 import { getLogData } from "./db/helpers/log-request.helper";
@@ -36,7 +35,6 @@ app.get("/get-places", getPlaces);
 
 // POST ROUTES
 app.post("/report-problem", insertProblem);
-app.post("/login", login);
 
 // UPDATE ROUTES
 
@@ -47,7 +45,6 @@ app.post("/login", login);
 */
 
 // GET ROUTES
-app.get("/get-admins", authenticateToken, getAdmins);
 app.get("/get-unsolved-problems", authenticateToken, getUnsolvedProblems);
 app.get("/get-solved-problems", authenticateToken, getSolvedProblems);
 app.get("/get-comments", authenticateToken, getCommentsToProblem);
@@ -70,7 +67,6 @@ app.put("/mark-problem-as-unsolved", authenticateToken, markProblemAsUnsolved);
 // DELETE ROUTES
 app.delete("/delete-category", authenticateToken, deleteCategory);
 app.delete("/delete-place", authenticateToken, deletePlace);
-app.delete("/delete-administrator", authenticateToken, deleteAdministrator);
 app.delete("/delete-problems", authenticateToken, deleteProblems)
 
 app.listen(config.express.port, () => {
