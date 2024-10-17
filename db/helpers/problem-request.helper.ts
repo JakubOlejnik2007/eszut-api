@@ -5,9 +5,16 @@ import { getCategoryDefaultPriority, getCategoryName } from "./category-request.
 import { TProblemToSendEmail } from "../../types/email";
 import { getPlaceName } from "./place-request.helper";
 import { sendEmailsAboutNewProblem } from "../../utils/send-emails";
+import checkUserRole from "../../utils/check-user-role";
+import EUserRole from "../../types/userroles.enum";
 
 export const getUnsolvedProblems = async (req: Request, res: Response) => {
     try {
+        if (req.body.userrole !== EUserRole.ADMIN) {
+            return res.sendStatus(403);
+        }
+
+
         const problems: any = await Problem.find({ isSolved: false })
             .sort({ priority: 1, when: 1 })
             .populate("CategoryID", "name")
@@ -26,6 +33,9 @@ export const getUnsolvedProblems = async (req: Request, res: Response) => {
 
 export const getSolvedProblems = async (req: Request, res: Response) => {
     try {
+        if (req.body.userrole !== EUserRole.ADMIN) {
+            return res.sendStatus(403);
+        }
         const page = parseInt(String(req.query.page)) || 1;
         const perPage = 15;
         const skip = (page - 1) * perPage;
@@ -55,6 +65,9 @@ export const getSolvedProblems = async (req: Request, res: Response) => {
 };
 
 export const insertProblem = async (req: Request, res: Response) => {
+    if (req.body.userrole !== EUserRole.USER) {
+        return res.sendStatus(403);
+    }
     try {
         const defaultPriorityForCategory = await getCategoryDefaultPriority(req.body.CategoryID);
 
@@ -90,6 +103,9 @@ export const insertProblem = async (req: Request, res: Response) => {
 
 export const updateProblem = async (req: Request, res: Response) => {
     try {
+        if (req.body.userrole !== EUserRole.ADMIN) {
+            return res.sendStatus(403);
+        }
         await Problem.findByIdAndUpdate(req.body.ProblemID, {
             priority: req.body.priority,
             CategoryID: req.body.CategoryID,
@@ -102,6 +118,9 @@ export const updateProblem = async (req: Request, res: Response) => {
 
 export const takeOnProblem = async (req: Request, res: Response) => {
     try {
+        if (req.body.userrole !== EUserRole.ADMIN) {
+            return res.sendStatus(403);
+        }
         if (!req.body.ProblemID) throw new Error();
         const problem = await Problem.findById(req.body.ProblemID);
         if (!problem) throw new Error();
@@ -118,6 +137,9 @@ export const takeOnProblem = async (req: Request, res: Response) => {
 
 export const rejectProblem = async (req: Request, res: Response) => {
     try {
+        if (req.body.userrole !== EUserRole.ADMIN) {
+            return res.sendStatus(403);
+        }
         if (!req.body.ProblemID) throw new Error();
         const problem = await Problem.findById(req.body.ProblemID);
         if (!problem) throw new Error();
@@ -132,6 +154,9 @@ export const rejectProblem = async (req: Request, res: Response) => {
 
 export const markProblemAsSolved = async (req: Request, res: Response) => {
     try {
+        if (req.body.userrole !== EUserRole.ADMIN) {
+            return res.sendStatus(403);
+        }
         if (!req.body.ProblemID) throw new Error();
         const problem = await Problem.findById(req.body.ProblemID);
         if (!problem) throw new Error();
@@ -149,6 +174,9 @@ export const markProblemAsSolved = async (req: Request, res: Response) => {
 
 export const markProblemAsUnsolved = async (req: Request, res: Response) => {
     try {
+        if (req.body.userrole !== EUserRole.ADMIN) {
+            return res.sendStatus(403);
+        }
         if (!req.body.ProblemID) throw new Error();
         const problem = await Problem.findById(req.body.ProblemID);
         if (!problem) throw new Error();
@@ -186,6 +214,9 @@ export const isAdministratorAssignedToProblem = async (AdministratorID: string):
 
 export const deleteProblems = async (req: Request, res: Response) => {
     try {
+        if (req.body.userrole !== EUserRole.ADMIN) {
+            return res.sendStatus(403);
+        }
         req.body.problems.forEach(async (item: FormDataEntryValue) => {
             await Problem.findByIdAndDelete(item);
         });
