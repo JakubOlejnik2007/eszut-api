@@ -65,7 +65,7 @@ export const getSolvedProblems = async (req: Request, res: Response) => {
 };
 
 export const insertProblem = async (req: Request, res: Response) => {
-    if (req.body.userrole !== EUserRole.USER) {
+    if (req.body.userrole < EUserRole.USER) {
         return res.sendStatus(403);
     }
     try {
