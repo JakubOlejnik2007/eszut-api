@@ -163,7 +163,8 @@ export const markProblemAsSolved = async (req: Request, res: Response) => {
         if (!problem.isUnderRealization) throw new Error();
         problem.isUnderRealization = false;
         problem.isSolved = true;
-        //problem.whoSolvedID = req.body.AdministratorID;
+        problem.whoSolvedEmail = req.body.userdata.upn;
+        problem.whoSolvedName = req.body.userdata.name;
         problem.dateOfSolved = Date.now();
         await problem.save();
         res.sendStatus(200);
