@@ -44,15 +44,17 @@ export const getSolvedProblems = async (req: Request, res: Response) => {
             .sort("priority")
             .populate("CategoryID", "name")
             .populate("PlaceID", "name")
-            .populate("whoSolvedID", "name")
             .skip(skip)
             .limit(perPage);
+        console.log(problems[1])
         const problemsWithCategoryName = problems.map((problem: any) => ({
             ...problem._doc,
             categoryName: problem.CategoryID.name,
             placeName: problem.PlaceID.name,
-            whoSolved: problem.whoSolvedID ? problem.whoSolvedID.name : "",
+
         }));
+
+        console.log(problemsWithCategoryName[1]);
 
         res.status(200).json({
             totalCount,
@@ -60,6 +62,7 @@ export const getSolvedProblems = async (req: Request, res: Response) => {
             items: problemsWithCategoryName,
         });
     } catch (error) {
+        console.log(error);
         res.sendStatus(503);
     }
 };
