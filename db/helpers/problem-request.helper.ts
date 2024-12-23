@@ -187,7 +187,8 @@ export const markProblemAsUnsolved = async (req: Request, res: Response) => {
         if (!problem.isSolved) throw new Error();
         problem.isUnderRealization = true;
         problem.isSolved = false;
-        //problem.whoDealsID = req.body.AdministratorID;
+        problem.whoDealsName = req.body.userdata.name;
+        problem.whoDealsEmail = req.body.userdata.upn;
         await problem.save();
         res.sendStatus(200);
     } catch (error) {
