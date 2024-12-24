@@ -52,10 +52,6 @@ const authenticateToken = async (req: Request, res: Response, next: NextFunction
         const userGroups = await getUserGroups(graphAccessToken, userId);
         console.log("User belongs to groups: ", userGroups);
         req.body.userrole = checkUserRole(userGroups)
-        if (req.body.userrole === 0) {
-            res.sendStatus(403);
-            return;
-        }
         req.body.userGroups = userGroups
         req.body.userdata = decodedToken
         console.log(decodedToken)
