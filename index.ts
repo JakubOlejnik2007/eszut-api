@@ -18,6 +18,8 @@ import { getCommentsToProblem, insertCommentToProblem } from "./db/helpers/comme
 import authenticateToken from "./utils/token-authentication.helper";
 import { getLogData } from "./db/helpers/log-request.helper";
 
+import { getGraphAccessToken, getUserGroups } from "./utils/get-user-teams";
+
 require("./db/db_config");
 
 const app: Express = express();
@@ -32,7 +34,12 @@ app.use(cors());
 // GET ROUTES
 app.get("/get-categories", getCategories);
 app.get("/get-places", getPlaces);
+app.get("/get-user-teams", async (req, res) => {
+    console.log(req.query.id);
 
+    const graphAccessToken = await getGraphAccessToken();
+    res.send(await getUserGroups(graphAccessToken, req.query.id as string));
+})
 // POST ROUTES
 app.post("/report-problem", insertProblem);
 

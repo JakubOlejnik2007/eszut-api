@@ -4,7 +4,6 @@ import { JwksClient } from "jwks-rsa";
 import config from "../config";
 import { getGraphAccessToken, getUserGroups } from "./get-user-teams";
 import checkUserRole from "./check-user-role";
-
 const client = new JwksClient({
     jwksUri: `https://login.microsoftonline.com/${config.EntraID.tenant}/discovery/v2.0/keys`
 });
@@ -47,7 +46,7 @@ const authenticateToken = async (req: Request, res: Response, next: NextFunction
     try {
         const decodedToken: any = await verifyToken(token)
         const userId = decodedToken.oid;
-        const graphAccessToken = await getGraphAccessToken(token);
+        const graphAccessToken = await getGraphAccessToken();
 
         const userGroups = await getUserGroups(graphAccessToken, userId);
         console.log("User belongs to groups: ", userGroups);
