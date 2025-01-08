@@ -22,7 +22,9 @@ export const getUnsolvedProblems = async (req: Request, res: Response) => {
         const problemsWithCategoryName = problems.map((problem: any) => ({
             ...problem._doc,
             categoryName: problem.CategoryID.name,
-            placeName: problem.PlaceID.name
+            categoryId: problem.CategoryID._id,
+            placeName: problem.PlaceID.name,
+            placeId: problem.PlaceID._id,
         }));
         res.status(200);
         res.send(problemsWithCategoryName);
