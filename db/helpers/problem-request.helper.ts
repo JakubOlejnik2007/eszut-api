@@ -114,6 +114,7 @@ export const updateProblem = async (req: Request, res: Response) => {
         await Problem.findByIdAndUpdate(req.body.ProblemID, {
             priority: req.body.priority,
             CategoryID: req.body.CategoryID,
+            PlaceID: req.body.PlaceID
         });
         res.sendStatus(200);
     } catch {
