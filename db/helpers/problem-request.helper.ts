@@ -75,9 +75,10 @@ export const insertProblem = async (req: Request, res: Response) => {
     }
     try {
         const defaultPriorityForCategory = await getCategoryDefaultPriority(req.body.CategoryID);
-
         const problem: IProblem = {
             ...req.body,
+            whoName: req.body.userdata.name,
+            whoEmail: req.body.userdata.upn,
             priority: defaultPriorityForCategory,
             when: Date.now(),
         };
@@ -101,7 +102,8 @@ export const insertProblem = async (req: Request, res: Response) => {
         //sendEmailsAboutNewProblem(problemToSend, emails);
 
         res.sendStatus(200);
-    } catch {
+    } catch (e) {
+        console.log(e);
         res.sendStatus(503);
     }
 };
@@ -133,7 +135,7 @@ export const takeOnProblem = async (req: Request, res: Response) => {
         if (problem.isUnderRealization) throw new Error();
         problem.isUnderRealization = true;
         problem.whoDealsEmail = req.body.userdata.upn;
-        problem.whoDealsName = req.body.userdata.name; ``
+        problem.whoDealsName = req.body.userdata.name;
         await problem.save();
         res.sendStatus(200);
     } catch {

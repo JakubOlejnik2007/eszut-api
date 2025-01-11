@@ -41,7 +41,7 @@ app.get("/get-user-teams", async (req, res) => {
     res.send(await getUserGroups(graphAccessToken, req.query.id as string));
 })
 // POST ROUTES
-app.post("/report-problem", insertProblem);
+app.post("/report-problem", authenticateToken, insertProblem);
 
 // UPDATE ROUTES
 
