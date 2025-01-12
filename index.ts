@@ -22,6 +22,15 @@ import { getGraphAccessToken, getUserGroups } from "./utils/get-user-teams";
 
 require("./db/db_config");
 
+import * as admin from "firebase-admin";
+
+var serviceAccount = require("./serviceAccountKey.json");
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+});
+
+
 const app: Express = express();
 
 app.use(express.json());
@@ -32,6 +41,15 @@ app.use(cors());
     PUBLIC ROUTES
 */
 // GET ROUTES
+
+app.post("/token", (req, res) => {
+
+    console.log(req.body);
+
+    res.sendStatus(200);
+
+})
+
 app.get("/get-categories", getCategories);
 app.get("/get-places", getPlaces);
 app.get("/get-user-teams", async (req, res) => {
