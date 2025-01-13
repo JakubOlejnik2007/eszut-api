@@ -46,5 +46,6 @@ export interface IUser {
 export interface ILOG {
     date: number,
     content: string,
-    error: string
+    userEmail: string
+
 }

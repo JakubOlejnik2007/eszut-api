@@ -1,4 +1,5 @@
 import { ILOG } from "../../types/db-types";
+import EUserRole from "../../types/userroles.enum";
 import LOG from "../models/log.helper";
 import { Request, Response } from "express";
 
@@ -11,6 +12,9 @@ export const writeLog = async (data: ILOG) => {
 
 export const getLogData = async (req: Request, res: Response) => {
     try {
+        if (req.body.userrole !== EUserRole.ADMIN) {
+            return res.sendStatus(403);
+        }
         const page = parseInt(String(req.query.page)) || 1;
         const perPage = 50;
         const skip = (page - 1) * perPage;

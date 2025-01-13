@@ -10,9 +10,9 @@ const LOG = mongoose.model('Log', new mongoose.Schema({
         type: String,
         required: true,
     },
-    error: {
+    userEmail: {
         type: String,
-        required: true
+        required: true,
     }
 }))
 export default LOG;   
