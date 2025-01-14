@@ -4,7 +4,7 @@ import LOG from "../models/log.helper";
 import { Request, Response } from "express";
 
 export const writeLog = async (data: ILOG) => {
-    try{
+    try {
         await LOG.create(data);
     } catch {
     }
@@ -24,10 +24,10 @@ export const getLogData = async (req: Request, res: Response) => {
 
         res.status(200).json({
             totalCount,
-            currentPage:page,
+            currentPage: page,
             items: logs
         })
-    } catch  {
+    } catch {
         res.sendStatus(503);
     }
 }
