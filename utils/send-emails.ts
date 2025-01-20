@@ -4,6 +4,7 @@ import { IAdministrator, IProblem } from "../types/db-types";
 import { TAdministratorToSendEmail, TProblemToSendEmail } from "../types/email";
 import { writeLog } from "../db/helpers/log-request.helper";
 import Administrator from "../db/models/administrator.helper";
+import LOGTYPES from "../types/logtypes.enum";
 
 const { mail } = config;
 
@@ -158,6 +159,8 @@ export const sendEmailsAboutNewAdministrator = (administrator: TAdministratorToS
         date: Date.now(),
         content: `Error: Cannot send mail to ${email}`,
         error: String(error),
+        type: LOGTYPES.ERROR,
+        
       });
     }
   });

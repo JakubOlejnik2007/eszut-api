@@ -8,6 +8,7 @@ import { sendEmailsAboutNewProblem } from "../../utils/send-emails";
 import checkUserRole from "../../utils/check-user-role";
 import EUserRole from "../../types/userroles.enum";
 import { writeLog } from "./log-request.helper";
+import LOGTYPES from "../../types/logtypes.enum";
 
 export const getUnsolvedProblems = async (req: Request, res: Response) => {
     try {
@@ -106,6 +107,7 @@ export const insertProblem = async (req: Request, res: Response) => {
             date: Date.now(),
             content: `Problem ${createdProblem._id} added by ${req.body.userdata.name}`,
             userEmail: req.body.userdata.upn,
+            type: LOGTYPES.INFO,
         })
 
         res.sendStatus(200);
@@ -129,6 +131,7 @@ export const updateProblem = async (req: Request, res: Response) => {
             date: Date.now(),
             content: `Problem ${req.body.ProblemID} updated by ${req.body.userdata.name}`,
             userEmail: req.body.userdata.upn,
+            type: LOGTYPES.INFO,
         })
         res.sendStatus(200);
     } catch {
@@ -153,6 +156,7 @@ export const takeOnProblem = async (req: Request, res: Response) => {
             date: Date.now(),
             content: `Problem ${req.body.ProblemID} was taken by ${req.body.userdata.name}`,
             userEmail: req.body.userdata.upn,
+            type: LOGTYPES.INFO,
         })
         res.sendStatus(200);
     } catch {
@@ -175,6 +179,7 @@ export const rejectProblem = async (req: Request, res: Response) => {
             date: Date.now(),
             content: `Problem ${req.body.ProblemID} was rejected by ${req.body.userdata.name}`,
             userEmail: req.body.userdata.upn,
+            type: LOGTYPES.INFO,
         })
         res.sendStatus(200);
     } catch {
@@ -201,6 +206,7 @@ export const markProblemAsSolved = async (req: Request, res: Response) => {
             date: Date.now(),
             content: `Problem ${req.body.ProblemID} was marked as solved by ${req.body.userdata.name}`,
             userEmail: req.body.userdata.upn,
+            type: LOGTYPES.INFO,
         })
         res.sendStatus(200);
     } catch (error) {
@@ -227,6 +233,7 @@ export const markProblemAsUnsolved = async (req: Request, res: Response) => {
             date: Date.now(),
             content: `Problem ${req.body.ProblemID} was marked as unsolved by ${req.body.userdata.name}`,
             userEmail: req.body.userdata.upn,
+            type: LOGTYPES.INFO,
         })
     } catch (error) {
         res.sendStatus(503);
