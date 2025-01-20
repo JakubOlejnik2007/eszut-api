@@ -30,7 +30,14 @@ export const getUnsolvedProblems = async (req: Request, res: Response) => {
         }));
         res.status(200);
         res.send(problemsWithCategoryName);
-    } catch (error) {
+    } catch (e) {
+        const error = e as Error;
+        writeLog({
+            type: LOGTYPES.ERROR,
+            userEmail: req.body.userdata.upn ? req.body.userdata.upn : "Unknown",
+            date: Date.now(),
+            content: `Unexpected error in getUnsolvedProblem: ${error.message}`
+        });
         res.sendStatus(503);
     }
 };
@@ -65,8 +72,14 @@ export const getSolvedProblems = async (req: Request, res: Response) => {
             currentPage: page,
             items: problemsWithCategoryName,
         });
-    } catch (error) {
-        console.log(error);
+    } catch (e) {
+        const error = e as Error;
+        writeLog({
+            type: LOGTYPES.ERROR,
+            userEmail: "Unknown",
+            date: Date.now(),
+            content: `Unexpected error in getSolvedProblem: ${error.message}`
+        });
         res.sendStatus(503);
     }
 };
@@ -112,7 +125,13 @@ export const insertProblem = async (req: Request, res: Response) => {
 
         res.sendStatus(200);
     } catch (e) {
-        console.log(e);
+        const error = e as Error;
+        writeLog({
+            type: LOGTYPES.ERROR,
+            userEmail: "Unknown",
+            date: Date.now(),
+            content: `Unexpected error in insertProblem: ${error.message}`
+        });
         res.sendStatus(503);
     }
 };
