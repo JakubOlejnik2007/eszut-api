@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import LOGTYPES from "../../types/logtypes.enum";
 
 const LOG = mongoose.model('Log', new mongoose.Schema({
     date: {
@@ -10,9 +11,14 @@ const LOG = mongoose.model('Log', new mongoose.Schema({
         type: String,
         required: true,
     },
-    error: {
+    userEmail: {
         type: String,
-        required: true
+        required: true,
+    },
+    type: {
+        type: Number,
+        required: true,
+        default: LOGTYPES.INFO
     }
 }))
 export default LOG;   

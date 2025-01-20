@@ -1,4 +1,5 @@
 import mongoose from "mongoose"
+import LOGTYPES from "./logtypes.enum"
 
 export interface ICategory {
     _id?: mongoose.Schema.Types.ObjectId,
@@ -46,5 +47,6 @@ export interface IUser {
 export interface ILOG {
     date: number,
     content: string,
-    error: string
+    userEmail: string,
+    type: LOGTYPES
 }

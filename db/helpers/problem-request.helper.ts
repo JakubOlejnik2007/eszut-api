@@ -7,6 +7,8 @@ import { getPlaceName } from "./place-request.helper";
 import { sendEmailsAboutNewProblem } from "../../utils/send-emails";
 import checkUserRole from "../../utils/auth/check-user-role";
 import EUserRole from "../../types/userroles.enum";
+import { writeLog } from "./log-request.helper";
+import LOGTYPES from "../../types/logtypes.enum";
 
 export const getUnsolvedProblems = async (req: Request, res: Response) => {
     try {
@@ -28,7 +30,14 @@ export const getUnsolvedProblems = async (req: Request, res: Response) => {
         }));
         res.status(200);
         res.send(problemsWithCategoryName);
-    } catch (error) {
+    } catch (e) {
+        const error = e as Error;
+        writeLog({
+            type: LOGTYPES.ERROR,
+            userEmail: req.body.userdata.upn ? req.body.userdata.upn : "Unknown",
+            date: Date.now(),
+            content: `Unexpected error in getUnsolvedProblem: ${error.message}`
+        });
         res.sendStatus(503);
     }
 };
@@ -63,8 +72,14 @@ export const getSolvedProblems = async (req: Request, res: Response) => {
             currentPage: page,
             items: problemsWithCategoryName,
         });
-    } catch (error) {
-        console.log(error);
+    } catch (e) {
+        const error = e as Error;
+        writeLog({
+            type: LOGTYPES.ERROR,
+            userEmail: "Unknown",
+            date: Date.now(),
+            content: `Unexpected error in getSolvedProblem: ${error.message}`
+        });
         res.sendStatus(503);
     }
 };
@@ -101,9 +116,22 @@ export const insertProblem = async (req: Request, res: Response) => {
 
         //sendEmailsAboutNewProblem(problemToSend, emails);
 
+        writeLog({
+            date: Date.now(),
+            content: `Problem ${createdProblem._id} added by ${req.body.userdata.name}`,
+            userEmail: req.body.userdata.upn,
+            type: LOGTYPES.INFO,
+        })
+
         res.sendStatus(200);
     } catch (e) {
-        console.log(e);
+        const error = e as Error;
+        writeLog({
+            type: LOGTYPES.ERROR,
+            userEmail: "Unknown",
+            date: Date.now(),
+            content: `Unexpected error in insertProblem: ${error.message}`
+        });
         res.sendStatus(503);
     }
 };
@@ -118,6 +146,12 @@ export const updateProblem = async (req: Request, res: Response) => {
             CategoryID: req.body.CategoryID,
             PlaceID: req.body.PlaceID
         });
+        writeLog({
+            date: Date.now(),
+            content: `Problem ${req.body.ProblemID} updated by ${req.body.userdata.name}`,
+            userEmail: req.body.userdata.upn,
+            type: LOGTYPES.INFO,
+        })
         res.sendStatus(200);
     } catch {
         res.sendStatus(503);
@@ -137,6 +171,12 @@ export const takeOnProblem = async (req: Request, res: Response) => {
         problem.whoDealsEmail = req.body.userdata.upn;
         problem.whoDealsName = req.body.userdata.name;
         await problem.save();
+        writeLog({
+            date: Date.now(),
+            content: `Problem ${req.body.ProblemID} was taken by ${req.body.userdata.name}`,
+            userEmail: req.body.userdata.upn,
+            type: LOGTYPES.INFO,
+        })
         res.sendStatus(200);
     } catch {
         res.sendStatus(503);
@@ -154,6 +194,12 @@ export const rejectProblem = async (req: Request, res: Response) => {
         if (!problem.isUnderRealization) throw new Error();
         problem.isUnderRealization = false;
         await problem.save();
+        writeLog({
+            date: Date.now(),
+            content: `Problem ${req.body.ProblemID} was rejected by ${req.body.userdata.name}`,
+            userEmail: req.body.userdata.upn,
+            type: LOGTYPES.INFO,
+        })
         res.sendStatus(200);
     } catch {
         res.sendStatus(503);
@@ -175,6 +221,12 @@ export const markProblemAsSolved = async (req: Request, res: Response) => {
         problem.whoSolvedName = req.body.userdata.name;
         problem.dateOfSolved = Date.now();
         await problem.save();
+        writeLog({
+            date: Date.now(),
+            content: `Problem ${req.body.ProblemID} was marked as solved by ${req.body.userdata.name}`,
+            userEmail: req.body.userdata.upn,
+            type: LOGTYPES.INFO,
+        })
         res.sendStatus(200);
     } catch (error) {
         res.sendStatus(503);
@@ -196,6 +248,12 @@ export const markProblemAsUnsolved = async (req: Request, res: Response) => {
         problem.whoDealsEmail = req.body.userdata.upn;
         await problem.save();
         res.sendStatus(200);
+        writeLog({
+            date: Date.now(),
+            content: `Problem ${req.body.ProblemID} was marked as unsolved by ${req.body.userdata.name}`,
+            userEmail: req.body.userdata.upn,
+            type: LOGTYPES.INFO,
+        })
     } catch (error) {
         res.sendStatus(503);
     }
