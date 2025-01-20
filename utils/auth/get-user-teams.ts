@@ -1,6 +1,6 @@
 import axios from 'axios';
 import qs from 'qs';
-import config from '../config';
+import config from '../../config';
 
 export const getGraphAccessToken = async (): Promise<string> => {
     const url = `https://login.microsoftonline.com/${config.EntraID.tenant}/oauth2/v2.0/token`;

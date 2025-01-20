@@ -15,16 +15,22 @@ import {
     updateProblem,
 } from "./db/helpers/problem-request.helper";
 import { getCommentsToProblem, insertCommentToProblem } from "./db/helpers/comment-request.helper";
-import authenticateToken from "./utils/token-authentication.helper";
+import authenticateToken from "./utils/auth/token-authentication.helper";
 import { getLogData } from "./db/helpers/log-request.helper";
-
-import { getGraphAccessToken, getUserGroups } from "./utils/get-user-teams";
+import { sign, verify } from "jsonwebtoken";
+import { getGraphAccessToken, getUserGroups } from "./utils/auth/get-user-teams";
+import * as admin from "firebase-admin";
+import { JwksClient } from "jwks-rsa";
+import IUser from "./types/user";
+import EUserRole from "./types/userroles.enum";
+import checkUserRole from "./utils/auth/check-user-role";
+import refreshToken from "./utils/auth/refresh-token";
 
 require("./db/db_config");
 
-import * as admin from "firebase-admin";
-
 var serviceAccount = require("./serviceAccountKey.json");
+
+
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
@@ -93,6 +99,76 @@ app.put("/mark-problem-as-unsolved", authenticateToken, markProblemAsUnsolved);
 app.delete("/delete-category", authenticateToken, deleteCategory);
 app.delete("/delete-place", authenticateToken, deletePlace);
 app.delete("/delete-problems", authenticateToken, deleteProblems)
+
+app.get("/set-tokens", async (req, res) => {
+    const MSAL_TOKEN = req.query.MSAL_TOKEN as string | null;
+    console.log(MSAL_TOKEN);
+
+    if (!MSAL_TOKEN) {
+        return res.status(400).send({ message: "MSAL_TOKEN is required" });
+    }
+
+    const client = new JwksClient({
+        jwksUri: `https://login.microsoftonline.com/${config.EntraID.tenant}/discovery/v2.0/keys`
+    });
+
+
+    const getKey = (header: any, callback: any) => {
+        client.getSigningKey(header.kid, function (err, key) {
+            if (err) {
+                callback(err, null);
+            } else {
+                const signingKey = (key as any).getPublicKey();
+                callback(null, signingKey);
+            }
+        });
+    }
+
+    const verifyToken = (token: string) => {
+        return new Promise((resolve, reject) => {
+            verify(token, getKey, {
+                audience: `api://${config.EntraID.client}`,
+                issuer: `https://sts.windows.net/${config.EntraID.tenant}/`
+            }, (err: any, decoded: unknown) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(decoded);
+                }
+            });
+        });
+    }
+
+    const decodedToken = await verifyToken(MSAL_TOKEN);
+
+    const graphAccessToken = await getGraphAccessToken();
+
+    const teams = await getUserGroups(graphAccessToken, (decodedToken as any).oid);
+    console.log(teams);
+    const importantData: IUser = {
+        userId: (decodedToken as any).oid,
+        username: (decodedToken as any).unique_name,
+        email: (decodedToken as any).upn,
+        role: checkUserRole(teams)
+    }
+    console.log(importantData);
+
+    const generateAccessToken = (user: IUser) => {
+        return sign(user, config.secrets.access, { expiresIn: '15m' });
+    };
+
+    const generateRefreshToken = (user: IUser) => {
+        return sign(user, config.secrets.refresh, { expiresIn: '7d' });
+    };
+
+    res.send({
+        accessToken: generateAccessToken(importantData),
+        refreshToken: generateRefreshToken(importantData)
+    })
+
+})
+
+app.get("/refresh-token", refreshToken)
 
 app.listen(config.express.port, () => {
     console.log(`[⚡] Server is listening on port: ${config.express.port}!`);

@@ -27,4 +27,8 @@ export type TConfigData = {
         admins: string;
         teachers: string;
     };
+    secrets: {
+        refresh: string;
+        access: string;
+    }
 };

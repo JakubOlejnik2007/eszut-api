@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import Administrator from "../db/models/administrator.helper";
-import config from "../config";
+import config from "../../config";
 import { hash } from "bcrypt";
 
 

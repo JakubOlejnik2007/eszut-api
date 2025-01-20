@@ -5,7 +5,7 @@ import { getCategoryDefaultPriority, getCategoryName } from "./category-request.
 import { TProblemToSendEmail } from "../../types/email";
 import { getPlaceName } from "./place-request.helper";
 import { sendEmailsAboutNewProblem } from "../../utils/send-emails";
-import checkUserRole from "../../utils/check-user-role";
+import checkUserRole from "../../utils/auth/check-user-role";
 import EUserRole from "../../types/userroles.enum";
 
 export const getUnsolvedProblems = async (req: Request, res: Response) => {
