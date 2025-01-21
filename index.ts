@@ -163,7 +163,8 @@ app.get("/set-tokens", async (req, res) => {
 
     res.send({
         accessToken: generateAccessToken(importantData),
-        refreshToken: generateRefreshToken(importantData)
+        refreshToken: generateRefreshToken(importantData),
+        user: importantData
     })
 
 })

@@ -251,7 +251,7 @@ export const markProblemAsUnsolved = async (req: Request, res: Response) => {
         writeLog({
             date: Date.now(),
             content: `Problem ${req.body.ProblemID} was marked as unsolved by ${req.body.userdata.name}`,
-            userEmail: req.body.userdata.upn,
+            userEmail: req.body.user.email,
             type: LOGTYPES.INFO,
         })
     } catch (error) {
