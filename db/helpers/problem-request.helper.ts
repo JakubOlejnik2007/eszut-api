@@ -12,7 +12,7 @@ import LOGTYPES from "../../types/logtypes.enum";
 
 export const getUnsolvedProblems = async (req: Request, res: Response) => {
     try {
-        if (req.body.userrole !== EUserRole.ADMIN) {
+        if (req.body.user.role !== EUserRole.ADMIN) {
             return res.sendStatus(403);
         }
 
@@ -34,7 +34,7 @@ export const getUnsolvedProblems = async (req: Request, res: Response) => {
         const error = e as Error;
         writeLog({
             type: LOGTYPES.ERROR,
-            userEmail: req.body.userdata.upn ? req.body.userdata.upn : "Unknown",
+            userEmail: req.body.user.email ? req.body.user.email : "Unknown",
             date: Date.now(),
             content: `Unexpected error in getUnsolvedProblem: ${error.message}`
         });
@@ -44,7 +44,7 @@ export const getUnsolvedProblems = async (req: Request, res: Response) => {
 
 export const getSolvedProblems = async (req: Request, res: Response) => {
     try {
-        if (req.body.userrole !== EUserRole.ADMIN) {
+        if (req.body.user.role !== EUserRole.ADMIN) {
             return res.sendStatus(403);
         }
         const page = parseInt(String(req.query.page)) || 1;
@@ -85,15 +85,15 @@ export const getSolvedProblems = async (req: Request, res: Response) => {
 };
 
 export const insertProblem = async (req: Request, res: Response) => {
-    if (req.body.userrole < EUserRole.USER) {
+    if (req.body.user.role < EUserRole.USER) {
         return res.sendStatus(403);
     }
     try {
         const defaultPriorityForCategory = await getCategoryDefaultPriority(req.body.CategoryID);
         const problem: IProblem = {
             ...req.body,
-            whoName: req.body.userdata.name,
-            whoEmail: req.body.userdata.upn,
+            whoName: req.body.user.username,
+            whoEmail: req.body.user.email,
             priority: defaultPriorityForCategory,
             when: Date.now(),
         };
@@ -118,8 +118,8 @@ export const insertProblem = async (req: Request, res: Response) => {
 
         writeLog({
             date: Date.now(),
-            content: `Problem ${createdProblem._id} added by ${req.body.userdata.name}`,
-            userEmail: req.body.userdata.upn,
+            content: `Problem ${createdProblem._id} added by ${req.body.user.username}`,
+            userEmail: req.body.user.email,
             type: LOGTYPES.INFO,
         })
 
@@ -138,7 +138,7 @@ export const insertProblem = async (req: Request, res: Response) => {
 
 export const updateProblem = async (req: Request, res: Response) => {
     try {
-        if (req.body.userrole !== EUserRole.ADMIN) {
+        if (req.body.user.role !== EUserRole.ADMIN) {
             return res.sendStatus(403);
         }
         await Problem.findByIdAndUpdate(req.body.ProblemID, {
@@ -148,8 +148,8 @@ export const updateProblem = async (req: Request, res: Response) => {
         });
         writeLog({
             date: Date.now(),
-            content: `Problem ${req.body.ProblemID} updated by ${req.body.userdata.name}`,
-            userEmail: req.body.userdata.upn,
+            content: `Problem ${req.body.ProblemID} updated by ${req.body.user.username}`,
+            userEmail: req.body.user.email,
             type: LOGTYPES.INFO,
         })
         res.sendStatus(200);
@@ -160,7 +160,7 @@ export const updateProblem = async (req: Request, res: Response) => {
 
 export const takeOnProblem = async (req: Request, res: Response) => {
     try {
-        if (req.body.userrole !== EUserRole.ADMIN) {
+        if (req.body.user.role !== EUserRole.ADMIN) {
             return res.sendStatus(403);
         }
         if (!req.body.ProblemID) throw new Error();
@@ -168,13 +168,13 @@ export const takeOnProblem = async (req: Request, res: Response) => {
         if (!problem) throw new Error();
         if (problem.isUnderRealization) throw new Error();
         problem.isUnderRealization = true;
-        problem.whoDealsEmail = req.body.userdata.upn;
-        problem.whoDealsName = req.body.userdata.name;
+        problem.whoDealsEmail = req.body.user.email;
+        problem.whoDealsName = req.body.user.username;
         await problem.save();
         writeLog({
             date: Date.now(),
-            content: `Problem ${req.body.ProblemID} was taken by ${req.body.userdata.name}`,
-            userEmail: req.body.userdata.upn,
+            content: `Problem ${req.body.ProblemID} was taken by ${req.body.user.username}`,
+            userEmail: req.body.user.email,
             type: LOGTYPES.INFO,
         })
         res.sendStatus(200);
@@ -185,7 +185,7 @@ export const takeOnProblem = async (req: Request, res: Response) => {
 
 export const rejectProblem = async (req: Request, res: Response) => {
     try {
-        if (req.body.userrole !== EUserRole.ADMIN) {
+        if (req.body.user.role !== EUserRole.ADMIN) {
             return res.sendStatus(403);
         }
         if (!req.body.ProblemID) throw new Error();
@@ -196,8 +196,8 @@ export const rejectProblem = async (req: Request, res: Response) => {
         await problem.save();
         writeLog({
             date: Date.now(),
-            content: `Problem ${req.body.ProblemID} was rejected by ${req.body.userdata.name}`,
-            userEmail: req.body.userdata.upn,
+            content: `Problem ${req.body.ProblemID} was rejected by ${req.body.user.username}`,
+            userEmail: req.body.user.email,
             type: LOGTYPES.INFO,
         })
         res.sendStatus(200);
@@ -208,7 +208,7 @@ export const rejectProblem = async (req: Request, res: Response) => {
 
 export const markProblemAsSolved = async (req: Request, res: Response) => {
     try {
-        if (req.body.userrole !== EUserRole.ADMIN) {
+        if (req.body.user.role !== EUserRole.ADMIN) {
             return res.sendStatus(403);
         }
         if (!req.body.ProblemID) throw new Error();
@@ -217,14 +217,14 @@ export const markProblemAsSolved = async (req: Request, res: Response) => {
         if (!problem.isUnderRealization) throw new Error();
         problem.isUnderRealization = false;
         problem.isSolved = true;
-        problem.whoSolvedEmail = req.body.userdata.upn;
-        problem.whoSolvedName = req.body.userdata.name;
+        problem.whoSolvedEmail = req.body.user.email;
+        problem.whoSolvedName = req.body.user.username;
         problem.dateOfSolved = Date.now();
         await problem.save();
         writeLog({
             date: Date.now(),
-            content: `Problem ${req.body.ProblemID} was marked as solved by ${req.body.userdata.name}`,
-            userEmail: req.body.userdata.upn,
+            content: `Problem ${req.body.ProblemID} was marked as solved by ${req.body.user.username}`,
+            userEmail: req.body.user.email,
             type: LOGTYPES.INFO,
         })
         res.sendStatus(200);
@@ -235,7 +235,7 @@ export const markProblemAsSolved = async (req: Request, res: Response) => {
 
 export const markProblemAsUnsolved = async (req: Request, res: Response) => {
     try {
-        if (req.body.userrole !== EUserRole.ADMIN) {
+        if (req.body.user.role !== EUserRole.ADMIN) {
             return res.sendStatus(403);
         }
         if (!req.body.ProblemID) throw new Error();
@@ -244,13 +244,13 @@ export const markProblemAsUnsolved = async (req: Request, res: Response) => {
         if (!problem.isSolved) throw new Error();
         problem.isUnderRealization = true;
         problem.isSolved = false;
-        problem.whoDealsName = req.body.userdata.name;
-        problem.whoDealsEmail = req.body.userdata.upn;
+        problem.whoDealsName = req.body.user.username;
+        problem.whoDealsEmail = req.body.user.email;
         await problem.save();
         res.sendStatus(200);
         writeLog({
             date: Date.now(),
-            content: `Problem ${req.body.ProblemID} was marked as unsolved by ${req.body.userdata.name}`,
+            content: `Problem ${req.body.ProblemID} was marked as unsolved by ${req.body.user.username}`,
             userEmail: req.body.user.email,
             type: LOGTYPES.INFO,
         })
@@ -282,7 +282,7 @@ export const isAdministratorAssignedToProblem = async (AdministratorID: string):
 
 export const deleteProblems = async (req: Request, res: Response) => {
     try {
-        if (req.body.userrole !== EUserRole.ADMIN) {
+        if (req.body.user.role !== EUserRole.ADMIN) {
             return res.sendStatus(403);
         }
         req.body.problems.forEach(async (item: FormDataEntryValue) => {

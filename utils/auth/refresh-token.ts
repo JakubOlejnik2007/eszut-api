@@ -24,6 +24,7 @@ const refreshToken = (req: Request, res: Response) => {
             config.secrets.access,
             { expiresIn: '15m' }
         );
+        console.log(newAccessToken);
 
         res.json({ accessToken: newAccessToken });
     });

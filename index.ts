@@ -81,7 +81,7 @@ app.get("/get-solved-problems", authenticateToken, getSolvedProblems);
 app.get("/get-comments", authenticateToken, getCommentsToProblem);
 app.get("/get-logs", authenticateToken, getLogData);
 app.get("/get-user-role", authenticateToken, (req, res) => {
-    res.send({ role: req.body.userrole });
+    res.send({ role: req.body.user.role });
 })
 
 // POST ROUTES
@@ -144,10 +144,9 @@ app.get("/set-tokens", async (req, res) => {
     const graphAccessToken = await getGraphAccessToken();
 
     const teams = await getUserGroups(graphAccessToken, (decodedToken as any).oid);
-    console.log(teams);
     const importantData: IUser = {
         userId: (decodedToken as any).oid,
-        username: (decodedToken as any).unique_name,
+        username: (decodedToken as any).name,
         email: (decodedToken as any).upn,
         role: checkUserRole(teams)
     }

@@ -12,7 +12,7 @@ export const writeLog = async (data: ILOG) => {
 
 export const getLogData = async (req: Request, res: Response) => {
     try {
-        if (req.body.userrole !== EUserRole.ADMIN) {
+        if (req.body.user.role !== EUserRole.ADMIN) {
             return res.sendStatus(403);
         }
         const page = parseInt(String(req.query.page)) || 1;
