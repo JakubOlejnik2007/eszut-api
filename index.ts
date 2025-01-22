@@ -28,13 +28,13 @@ import refreshToken from "./utils/auth/refresh-token";
 
 require("./db/db_config");
 
-var serviceAccount = require("./serviceAccountKey.json");
+//var serviceAccount = require("./serviceAccountKey.json");
 
 
 
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-});
+// admin.initializeApp({
+//     credential: admin.credential.cert(serviceAccount)
+// });
 
 
 const app: Express = express();
@@ -102,6 +102,7 @@ app.delete("/delete-problems", authenticateToken, deleteProblems)
 
 app.get("/set-tokens", async (req, res) => {
     const MSAL_TOKEN = req.query.MSAL_TOKEN as string | null;
+    const TIME_FOR_TOKEN = req.query.TIME_FOR_TOKEN as string | null;
     console.log(MSAL_TOKEN);
 
     if (!MSAL_TOKEN) {
@@ -150,7 +151,6 @@ app.get("/set-tokens", async (req, res) => {
         email: (decodedToken as any).upn,
         role: checkUserRole(teams)
     }
-    console.log(importantData);
 
     const generateAccessToken = (user: IUser) => {
         return sign(user, config.secrets.access, { expiresIn: '15m' });
@@ -167,6 +167,26 @@ app.get("/set-tokens", async (req, res) => {
     })
 
 })
+
+app.get("/set-long-period-access-token", authenticateToken, (req, res) => {
+    try {
+
+        const user = req.body.user;
+        const time = req.query.time;
+
+        if (!time) {
+            throw new Error("Time is required");
+        }
+
+        res.send({
+            accessToken: sign(user, config.secrets.refresh, { expiresIn: time as string })
+        });
+    }
+    catch (err) {
+        console.log(err)
+        res.status(400);
+    }
+});
 
 app.get("/refresh-token", refreshToken)
 

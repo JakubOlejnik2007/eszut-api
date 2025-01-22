@@ -13,8 +13,6 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
         return res.status(401).json({ message: 'Unauthorized access: No token provided' });
     }
 
-    console.log(token)
-
     verify(token, config.secrets.access, (err, user: any) => {
         if (err) {
             return res.status(403).json({ message: 'Unauthorized access: Invalid or expired token' });
