@@ -153,7 +153,7 @@ app.get("/set-tokens", async (req, res) => {
     }
 
     const generateAccessToken = (user: IUser) => {
-        return sign(user, config.secrets.access, { expiresIn: '15m' });
+        return sign(user, config.secrets.access, { expiresIn: '30m' });
     };
 
     const generateRefreshToken = (user: IUser) => {
