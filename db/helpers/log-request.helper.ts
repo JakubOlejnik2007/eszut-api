@@ -20,7 +20,7 @@ export const getLogData = async (req: Request, res: Response) => {
         const skip = (page - 1) * perPage;
 
         const totalCount = await LOG.countDocuments({});
-        const logs = await LOG.find({}).sort("date").skip(skip).limit(perPage);
+        const logs = await LOG.find({}).sort({ date: -1 }).skip(skip).limit(perPage);
 
         res.status(200).json({
             totalCount,

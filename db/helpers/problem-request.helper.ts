@@ -52,7 +52,7 @@ export const getSolvedProblems = async (req: Request, res: Response) => {
         const skip = (page - 1) * perPage;
         const totalCount = await Problem.countDocuments({ isSolved: true });
         const problems = await Problem.find({ isSolved: true })
-            .sort("dateOfSolved")
+            .sort({ dateOfSolved: -1 })
             .populate("CategoryID", "name")
             .populate("PlaceID", "name")
             .skip(skip)
