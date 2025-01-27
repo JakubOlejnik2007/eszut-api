@@ -25,6 +25,8 @@ import IUser from "./types/user";
 import EUserRole from "./types/userroles.enum";
 import checkUserRole from "./utils/auth/check-user-role";
 import refreshToken from "./utils/auth/refresh-token";
+import { generateAccessToken } from "./utils/auth/generate-token";
+import TokenService from "./db/helpers/TokenService";
 
 require("./db/db_config");
 
@@ -152,9 +154,6 @@ app.get("/set-tokens", async (req, res) => {
         role: checkUserRole(teams)
     }
 
-    const generateAccessToken = (user: IUser) => {
-        return sign(user, config.secrets.access, { expiresIn: '30m' });
-    };
 
     const generateRefreshToken = (user: IUser) => {
         return sign(user, config.secrets.refresh, { expiresIn: '7d' });
@@ -172,14 +171,17 @@ app.get("/set-long-period-access-token", authenticateToken, (req, res) => {
     try {
 
         const user = req.body.user;
-        const time = req.query.time;
+        const days = req.query.days;
 
-        if (!time) {
+        if (!days) {
             throw new Error("Time is required");
         }
 
+        TokenService.createToken(user, parseInt(days as string));
+
+
         res.send({
-            accessToken: sign(user, config.secrets.refresh, { expiresIn: time as string })
+            longPeriodAccessToken: sign(user, config.secrets.refresh, { expiresIn: days as string })
         });
     }
     catch (err) {

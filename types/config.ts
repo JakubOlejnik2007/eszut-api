@@ -14,10 +14,6 @@ export type TConfigData = {
         public: string;
         private: string;
     };
-    authentication: {
-        secret: string,
-        expiresIn: string
-    };
     EntraID: {
         tenant: string;
         client: string;
@@ -30,5 +26,6 @@ export type TConfigData = {
     secrets: {
         refresh: string;
         access: string;
+        longPeriod: string;
     }
 };

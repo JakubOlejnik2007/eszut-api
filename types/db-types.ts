@@ -37,13 +37,6 @@ export interface IComment {
     content: string
 }
 
-export interface IUser {
-    _id?: string,
-    name: string,
-    email: string,
-    password?: string
-}
-
 export interface ILOG {
     date: number,
     content: string,
