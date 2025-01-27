@@ -11,7 +11,7 @@ export interface IToken extends Document {
 const TokenSchema: Schema = new Schema<IToken>({
     tokenName: { type: String, required: true },
     userEmail: { type: String, required: true },
-    token: { type: String, required: true, unique: true },
+    token: { type: String, required: true },
     expiresAt: { type: Date, required: true },
     createdAt: { type: Date, default: Date.now }
 });

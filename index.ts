@@ -167,21 +167,22 @@ app.get("/set-tokens", async (req, res) => {
 
 })
 
-app.get("/set-long-period-access-token", authenticateToken, (req, res) => {
+app.post("/create-token", authenticateToken, async (req, res) => {
     try {
 
         const user = req.body.user;
-        const days = req.query.days;
+        const days = req.body.daysToExpire;
+        const name = req.body.name;
 
         if (!days) {
             throw new Error("Time is required");
         }
 
-        TokenService.createToken(user, parseInt(days as string));
+        const token = await TokenService.createToken(user, parseInt(days as string), name as string);
 
 
         res.send({
-            longPeriodAccessToken: sign(user, config.secrets.refresh, { expiresIn: days as string })
+            longPeriodAccessToken: token
         });
     }
     catch (err) {
@@ -189,6 +190,12 @@ app.get("/set-long-period-access-token", authenticateToken, (req, res) => {
         res.status(400);
     }
 });
+
+app.get("/get-tokens", authenticateToken, async (req, res) => {
+    const tokens = await TokenService.getActiveTokens(req.body.user.userEmail);
+    console.log(tokens);
+    res.send(tokens);
+})
 
 app.get("/refresh-token", refreshToken)
 
