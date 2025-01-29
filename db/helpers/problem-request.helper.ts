@@ -57,15 +57,12 @@ export const getSolvedProblems = async (req: Request, res: Response) => {
             .populate("PlaceID", "name")
             .skip(skip)
             .limit(perPage);
-        console.log(problems[1])
         const problemsWithCategoryName = problems.map((problem: any) => ({
             ...problem._doc,
             categoryName: problem.CategoryID.name,
             placeName: problem.PlaceID.name,
 
         }));
-
-        console.log(problemsWithCategoryName[1]);
 
         res.status(200).json({
             totalCount,

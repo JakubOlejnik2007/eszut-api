@@ -3,7 +3,6 @@ import Category from "../models/category.helper";
 import { isCategoryUsed } from "./problem-request.helper";
 
 export const getCategories = async (req: Request, res: Response) => {
-    console.log("Get categories")
     try {
         const categories: any = await Category.find({});
         res.status(200);

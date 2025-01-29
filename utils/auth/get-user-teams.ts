@@ -27,14 +27,12 @@ export const getGraphAccessToken = async (): Promise<string> => {
 
 export const getUserGroups = async (graphAccessToken: string, userId: string): Promise<string[]> => {
     const url = `https://graph.microsoft.com/v1.0/users/${userId}/joinedTeams`;
-    console.log(url)
     const headers = {
         Authorization: `Bearer ${graphAccessToken}`,
     };
 
     try {
         const response = await axios.get(url, { headers });
-        console.log(response.data.value)
         const teams = response.data.value.map((team: any) => team.displayName); // Mapowanie na nazwę zespołu
         return teams;
     } catch (error) {
