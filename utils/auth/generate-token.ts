@@ -10,7 +10,7 @@ import TokenService from "../../db/helpers/TokenService";
 
 export const generateAccessToken = (user: IUser, expiresIn: string = "30m") => {
     const userToSign: IUser = { email: user.email, role: user.role, userId: user.userId, username: user.username }
-    return sign(userToSign, config.secrets.longPeriod, { expiresIn });
+    return sign(userToSign, config.secrets.access, { expiresIn });
 };
 
 export const generateRefreshToken = (user: IUser) => {

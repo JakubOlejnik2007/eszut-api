@@ -14,6 +14,7 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
     }
 
     verify(token, config.secrets.access, (err, user: any) => {
+        console.log(token, err)
         if (err) {
             return res.status(403).json({ message: 'Unauthorized access: Invalid or expired token' });
         }
