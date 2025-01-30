@@ -6,6 +6,7 @@ import IUser from "../../types/user";
 
 
 const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
+    console.log(req.body)
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 

@@ -79,6 +79,7 @@ export const setTokens = async (req: Request, res: Response) => {
 
 export const createToken = async (req: Request, res: Response) => {
     try {
+        console.log(req.body)
 
         const user = req.body.user;
         const days = req.body.daysToExpire;

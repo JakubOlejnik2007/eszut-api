@@ -79,7 +79,7 @@ app.get("/get-user-role", authenticateToken, (req, res) => {
     res.send({ role: req.body.user.role });
 })
 app.get("/get-tokens", authenticateToken, async (req, res) => {
-    const tokens = await TokenService.getActiveTokens(req.body.user.userEmail);
+    const tokens = await TokenService.getActiveTokens(req.body.user.email);
     res.send(tokens);
 })
 

@@ -18,8 +18,9 @@ class TokenService {
         return result.deletedCount === 1;
     }
 
-    async getActiveTokens(userId: string): Promise<IToken[]> {
-        return await Token.find({ userId, expiresAt: { $gt: new Date() } }).sort({ createdAt: -1 });
+    async getActiveTokens(userEmail: string): Promise<IToken[]> {
+        console.log(userEmail);
+        return await Token.find({ userEmail, expiresAt: { $gt: new Date() } }).sort({ createdAt: -1 });
     }
 
     async isValidToken(token: string): Promise<boolean> {
