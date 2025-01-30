@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Category from "../models/category.helper";
 import { isCategoryUsed } from "./problem-request.helper";
+import EUserRole from "../../types/userroles.enum";
 
 export const getCategories = async (req: Request, res: Response) => {
     try {
@@ -15,6 +16,7 @@ export const getCategories = async (req: Request, res: Response) => {
 
 export const insertCategory = async (req: Request, res: Response) => {
     try {
+        if (req.body.user.role !== EUserRole.ADMIN) return res.sendStatus(403);
         if (!req.body.name || !req.body.priority) throw new Error();
         Category.create(req.body);
         res.sendStatus(200);
@@ -25,6 +27,7 @@ export const insertCategory = async (req: Request, res: Response) => {
 
 export const deleteCategory = async (req: Request, res: Response) => {
     try {
+        if (req.body.user.role !== EUserRole.ADMIN) return res.sendStatus(403);
         if (!req.body.CategoryID) throw new Error();
 
         if (await isCategoryUsed(req.body.CategoryID)) throw new Error();

@@ -44,9 +44,7 @@ export const getUnsolvedProblems = async (req: Request, res: Response) => {
 
 export const getSolvedProblems = async (req: Request, res: Response) => {
     try {
-        if (req.body.user.role !== EUserRole.ADMIN) {
-            return res.sendStatus(403);
-        }
+        if (req.body.user.role !== EUserRole.ADMIN) return res.sendStatus(403);
         const page = parseInt(String(req.query.page)) || 1;
         const perPage = 15;
         const skip = (page - 1) * perPage;
