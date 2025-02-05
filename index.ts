@@ -116,6 +116,11 @@ app.put("/mark-problem-as-unsolved", authenticateToken, markProblemAsUnsolved);
 app.delete("/delete-category", authenticateToken, deleteCategory);
 app.delete("/delete-place", authenticateToken, deletePlace);
 app.delete("/delete-problems", authenticateToken, deleteProblems)
+app.delete("/delete-token", authenticateToken, async (req, res) => {
+    const tokenID = req.params.TokenID;
+    const result = await TokenService.deleteToken(tokenID)
+    res.sendStatus(result ? 200 : 401);
+})
 
 app.listen(config.express.port, () => {
     console.log(`[⚡] Server is listening on port: ${config.express.port}!`);

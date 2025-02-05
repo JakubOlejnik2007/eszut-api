@@ -13,9 +13,9 @@ class TokenService {
         return token;
     }
 
-    async deleteToken(token: string): Promise<boolean> {
-        const result = await Token.deleteOne({ token });
-        return result.deletedCount === 1;
+    async deleteToken(tokenID: string): Promise<boolean> {
+        const result = await Token.findByIdAndDelete(tokenID);
+        return result !== null;
     }
 
     async getActiveTokens(userEmail: string): Promise<IToken[]> {
