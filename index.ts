@@ -49,7 +49,7 @@ app.use(
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization"],
         credentials: true,
-        exposedHeaders: ["Authorization"], // Dodanie tej opcji może pomóc
+        exposedHeaders: ["Authorization"],
     })
 );
 
