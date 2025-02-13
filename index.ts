@@ -27,6 +27,9 @@ import checkUserRole from "./utils/auth/check-user-role";
 import refreshToken from "./utils/auth/refresh-token";
 import { createToken, generateAccessToken, generateRefreshToken, setTokens } from "./utils/auth/generate-token";
 import TokenService from "./db/helpers/TokenService";
+import { TEmailMapped } from "./types/email";
+import sendEmails from "./utils/send-emails";
+import getTeamMembers from "./utils/getUsersFromTeam";
 
 require("./db/db_config");
 
@@ -61,6 +64,45 @@ app.use((req, res, next) => {
     next();
 });
 
+
+
+app.get("/mail", (req, res) => {
+
+    const emailList: (string | TEmailMapped)[] = [
+        { email: 'olejnik.jakub@zstz-radzymin.pl', otherEmails: ['jacobole2000@gmail.com'] },
+        'jacobole@wp.pl'
+    ];
+
+    const emailSubject = "Welcome to Our Service";
+    const emailContent = `
+        <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd; border-radius: 5px;">
+          <h2 style="color: #0078D4;">Hello!</h2>
+          <p>Thank you for joining our service. We hope you have a great experience.</p>
+          <p style="font-weight: bold;">Best regards,<br>Your Company Team</p>
+        </div>
+      `;
+
+    sendEmails(emailList, emailSubject, emailContent);
+    res.sendStatus(200);
+})
+
+app.get("/members", async (req, res) => {
+    const teamId = "d0287945-f693-4323-a88f-ac0e118cee55";
+
+    const result = await getTeamMembers(teamId);
+
+    console.log(result);
+
+    const emails: string[] = [];
+
+    result.forEach((member: any) => {
+        emails.push(member.email);
+    })
+
+    console.log(emails);
+
+    res.send(emails);
+});
 
 /*
     PUBLIC ROUTES

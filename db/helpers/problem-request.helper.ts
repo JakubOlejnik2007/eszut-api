@@ -2,9 +2,8 @@ import { IProblem } from "../../types/db-types";
 import Problem from "../models/problem.helper";
 import { Request, Response } from "express";
 import { getCategoryDefaultPriority, getCategoryName } from "./category-request.helper";
-import { TProblemToSendEmail } from "../../types/email";
+
 import { getPlaceName } from "./place-request.helper";
-import { sendEmailsAboutNewProblem } from "../../utils/send-emails";
 import checkUserRole from "../../utils/auth/check-user-role";
 import EUserRole from "../../types/userroles.enum";
 import { writeLog } from "./log-request.helper";
@@ -98,7 +97,7 @@ export const insertProblem = async (req: Request, res: Response) => {
         //const emails = await getAdministratorsEmails();
         const categoryName = await getCategoryName(createdProblem.CategoryID.toString());
         const problemName = await getPlaceName(createdProblem.PlaceID.toString());
-        const problemToSend: TProblemToSendEmail = {
+        /* const problemToSend: TProblemToSendEmail = {
             _id: createdProblem._id.toString(),
             priority: createdProblem.priority,
             what: createdProblem.what,
@@ -107,7 +106,7 @@ export const insertProblem = async (req: Request, res: Response) => {
             whoEmail: createdProblem.whoEmail,
             where: problemName,
             categoryName,
-        };
+        };*/
 
         //sendEmailsAboutNewProblem(problemToSend, emails);
 
