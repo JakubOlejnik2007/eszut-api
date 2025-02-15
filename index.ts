@@ -7,6 +7,7 @@ import {
     deleteProblems,
     getSolvedProblems,
     getUnsolvedProblems,
+    getUnsolvedProblemsFromEmail,
     insertProblem,
     markProblemAsSolved,
     markProblemAsUnsolved,
@@ -30,6 +31,8 @@ import TokenService from "./db/helpers/TokenService";
 import { TEmailMapped } from "./types/email";
 import sendEmails from "./utils/send-emails";
 import getTeamMembers from "./utils/getUsersFromTeam";
+import { IProblem } from "./types/db-types";
+import mongoose from "mongoose";
 
 require("./db/db_config");
 
@@ -64,25 +67,48 @@ app.use((req, res, next) => {
     next();
 });
 
+const testProblem = {
+    priority: 2,
+    PlaceID: new mongoose.Schema.Types.ObjectId("649879769b8d119d39347bb2"),
+    whoName: 'Olejnik Jakub',
+    whoEmail: 'olejnik.jakub@zstz-radzymin.pl',
+    what: 'asdasdasd',
+    when: 1739482240212,
+    isSolved: false,
+    isUnderRealization: false,
+    CategoryID: new mongoose.Schema.Types.ObjectId("64ebb5340791e4fcf0c2937e"),
+    _id: new mongoose.Schema.Types.ObjectId("67ae6480632529b266a5af80"),
+    __v: 0
+}
 
+const htmlForEmail = (problem: IProblem) => {
+
+    const priorityColor = problem.priority === 1 ? "rgba(255, 0, 34, 0.5)" : problem.priority === 2 ? "rgba(255, 0, 132, 0.5)" : "rgba(144, 0, 255, 0.5)";
+
+    return `
+    <div style="width: 100%; display: flex; justify-content: center; background-color: #f0f0f0;">
+    <div style="font-family: Arial, sans-serif; background-color: #222; color: white; padding: 20px; border: 1px solid #444; border-radius: 5px; max-width: 500px;">
+      <h2 style="border-bottom: 5px solid ${priorityColor}; padding-bottom: 5px;">Problem z internetem</h2>
+      <p><strong>Data zgłoszenia:</strong> 10.02.2025, 20:58:08</p>
+      <p><strong>Sala:</strong> 10</p>
+      <p><strong>Zgłaszający:</strong> Olejnik Jakub (olejnik.jakub@zstz-radzymin.pl)</p>
+      <p><strong>Opis:</strong> asdasd</p>
+    </div></div>
+  `;
+}
 
 app.get("/mail", (req, res) => {
-
-    const emailList: (string | TEmailMapped)[] = [
-        { email: 'olejnik.jakub@zstz-radzymin.pl', otherEmails: ['jacobole2000@gmail.com'] },
-        'jacobole@wp.pl'
-    ];
+    res.send(htmlForEmail(testProblem));
+    return;
+    //const emailList: (string | TEmailMapped)[] = [
+    //    { email: 'olejnik.jakub@zstz-radzymin.pl', otherEmails: ['jacobole2000@gmail.com'] },
+    //    'jacobole@wp.pl'
+    //];
 
     const emailSubject = "Welcome to Our Service";
-    const emailContent = `
-        <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd; border-radius: 5px;">
-          <h2 style="color: #0078D4;">Hello!</h2>
-          <p>Thank you for joining our service. We hope you have a great experience.</p>
-          <p style="font-weight: bold;">Best regards,<br>Your Company Team</p>
-        </div>
-      `;
+    const emailContent = htmlForEmail(testProblem);
 
-    sendEmails(emailList, emailSubject, emailContent);
+    //sendEmails(["jacobole2000@gmail.com"], emailSubject, emailContent);
     res.sendStatus(200);
 })
 
@@ -131,6 +157,7 @@ app.post("/report-problem", authenticateToken, insertProblem);
 
 // GET ROUTES
 app.get("/get-unsolved-problems", authenticateToken, getUnsolvedProblems);
+app.get("/get-unsolved-problems-from-email", authenticateToken, getUnsolvedProblemsFromEmail)
 app.get("/get-solved-problems", authenticateToken, getSolvedProblems);
 app.get("/get-comments", authenticateToken, getCommentsToProblem);
 app.get("/get-logs", authenticateToken, getLogData);

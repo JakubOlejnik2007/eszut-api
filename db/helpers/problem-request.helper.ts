@@ -41,6 +41,40 @@ export const getUnsolvedProblems = async (req: Request, res: Response) => {
     }
 };
 
+export const getUnsolvedProblemsFromEmail = async (req: Request, res: Response) => {
+    try {
+        if (req.body.user.role < EUserRole.USER) {
+            return res.sendStatus(403);
+        }
+
+        console.log(req.body.user)
+
+
+        const problems: any = await Problem.find({ isSolved: false, whoEmail: req.body.user.email })
+            .sort({ priority: 1, when: 1 })
+            .populate("CategoryID", "name")
+            .populate("PlaceID", "name")
+        const problemsWithCategoryName = problems.map((problem: any) => ({
+            ...problem._doc,
+            categoryName: problem.CategoryID.name,
+            categoryId: problem.CategoryID._id,
+            placeName: problem.PlaceID.name,
+            placeId: problem.PlaceID._id,
+        }));
+        res.status(200);
+        res.send(problemsWithCategoryName);
+    } catch (e) {
+        const error = e as Error;
+        writeLog({
+            type: LOGTYPES.ERROR,
+            userEmail: req.body.user.email ? req.body.user.email : "Unknown",
+            date: Date.now(),
+            content: `Unexpected error in getUnsolvedProblemsFromEmail: ${error.message}`
+        });
+        res.sendStatus(503);
+    }
+};
+
 export const getSolvedProblems = async (req: Request, res: Response) => {
     try {
         if (req.body.user.role !== EUserRole.ADMIN) return res.sendStatus(403);
@@ -93,6 +127,9 @@ export const insertProblem = async (req: Request, res: Response) => {
         };
 
         const createdProblem = await Problem.create(problem);
+
+        console.log(createdProblem)
+
 
         //const emails = await getAdministratorsEmails();
         const categoryName = await getCategoryName(createdProblem.CategoryID.toString());
