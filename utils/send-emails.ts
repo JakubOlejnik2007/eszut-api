@@ -4,7 +4,7 @@ import config from '../config';
 
 
 
-async function sendEmails(emails: (string | TEmailMapped)[], subject: string, htmlContent: string) {
+const sendEmails = async (emails: (string | TEmailMapped)[], subject: string, htmlContent: string) => {
   const transporter = nodemailer.createTransport({
     service: config.mail.service,
     auth: {
