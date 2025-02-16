@@ -31,7 +31,8 @@ export interface IProblem {
 
 export interface IComment {
     _id?: mongoose.Schema.Types.ObjectId,
-    AdministratorID?: mongoose.Schema.Types.ObjectId,
+    authorName: string;
+    authorEmail: string;
     ProblemID: mongoose.Schema.Types.ObjectId,
     date?: number,
     content: string
