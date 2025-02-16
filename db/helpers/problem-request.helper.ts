@@ -8,6 +8,7 @@ import checkUserRole from "../../utils/auth/check-user-role";
 import EUserRole from "../../types/userroles.enum";
 import { writeLog } from "./log-request.helper";
 import LOGTYPES from "../../types/logtypes.enum";
+import sendEmailsAboutNewProblem from "../../utils/send-emails";
 
 export const getUnsolvedProblems = async (req: Request, res: Response) => {
     try {
@@ -126,26 +127,19 @@ export const insertProblem = async (req: Request, res: Response) => {
             when: Date.now(),
         };
 
-        const createdProblem = await Problem.create(problem);
+        const createdProblem = await Problem.create(problem) as any;
 
         console.log(createdProblem)
 
-
-        //const emails = await getAdministratorsEmails();
         const categoryName = await getCategoryName(createdProblem.CategoryID.toString());
-        const problemName = await getPlaceName(createdProblem.PlaceID.toString());
-        /* const problemToSend: TProblemToSendEmail = {
-            _id: createdProblem._id.toString(),
-            priority: createdProblem.priority,
-            what: createdProblem.what,
-            when: createdProblem.when,
-            whoName: createdProblem.whoName,
-            whoEmail: createdProblem.whoEmail,
-            where: problemName,
+        const placeName = await getPlaceName(createdProblem.PlaceID.toString());
+        const problemToSend = {
+            ...createdProblem._doc,
+            placeName,
             categoryName,
-        };*/
+        };
 
-        //sendEmailsAboutNewProblem(problemToSend, emails);
+        sendEmailsAboutNewProblem(problemToSend);
 
         writeLog({
             date: Date.now(),

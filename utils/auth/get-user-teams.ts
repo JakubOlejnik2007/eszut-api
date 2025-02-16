@@ -33,10 +33,31 @@ export const getUserGroups = async (graphAccessToken: string, userId: string): P
 
     try {
         const response = await axios.get(url, { headers });
-        const teams = response.data.value.map((team: any) => team.displayName); // Mapowanie na nazwę zespołu
+        const teams = response.data.value.map((team: any) => team.displayName);
         return teams;
     } catch (error) {
         console.error('Error fetching user teams:', error);
         throw new Error('Could not retrieve user teams');
+    }
+};
+
+export const getTeamIdByName = async (graphAccessToken: string, teamName: string): Promise<string | null> => {
+    const url = `https://graph.microsoft.com/v1.0/groups?$filter=resourceProvisioningOptions/Any(x:x eq 'Team') and displayName eq '${teamName}'`;
+    const headers = {
+        Authorization: `Bearer ${graphAccessToken}`,
+    };
+
+    try {
+        const response = await axios.get(url, { headers });
+        const teams = response.data.value;
+
+        if (teams.length > 0) {
+            return teams[0].id;
+        }
+
+        return null;
+    } catch (error) {
+        console.error('Error fetching team ID:', error);
+        throw new Error('Could not retrieve team ID');
     }
 };

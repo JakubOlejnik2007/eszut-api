@@ -19,7 +19,7 @@ import { getCommentsToProblem, insertCommentToProblem } from "./db/helpers/comme
 import authenticateToken from "./utils/auth/token-authentication.helper";
 import { getLogData } from "./db/helpers/log-request.helper";
 import { sign, verify } from "jsonwebtoken";
-import { getGraphAccessToken, getUserGroups } from "./utils/auth/get-user-teams";
+import { getGraphAccessToken, getTeamIdByName, getUserGroups } from "./utils/auth/get-user-teams";
 import * as admin from "firebase-admin";
 import { JwksClient } from "jwks-rsa";
 import IUser from "./types/user";
@@ -68,7 +68,7 @@ app.use((req, res, next) => {
 });
 
 const testProblem = {
-    priority: 2,
+    priority: 3,
     PlaceID: new mongoose.Schema.Types.ObjectId("649879769b8d119d39347bb2"),
     whoName: 'Olejnik Jakub',
     whoEmail: 'olejnik.jakub@zstz-radzymin.pl',
@@ -81,24 +81,10 @@ const testProblem = {
     __v: 0
 }
 
-const htmlForEmail = (problem: IProblem) => {
 
-    const priorityColor = problem.priority === 1 ? "rgba(255, 0, 34, 0.5)" : problem.priority === 2 ? "rgba(255, 0, 132, 0.5)" : "rgba(144, 0, 255, 0.5)";
-
-    return `
-    <div style="width: 100%; display: flex; justify-content: center; background-color: #f0f0f0;">
-    <div style="font-family: Arial, sans-serif; background-color: #222; color: white; padding: 20px; border: 1px solid #444; border-radius: 5px; max-width: 500px;">
-      <h2 style="border-bottom: 5px solid ${priorityColor}; padding-bottom: 5px;">Problem z internetem</h2>
-      <p><strong>Data zgłoszenia:</strong> 10.02.2025, 20:58:08</p>
-      <p><strong>Sala:</strong> 10</p>
-      <p><strong>Zgłaszający:</strong> Olejnik Jakub (olejnik.jakub@zstz-radzymin.pl)</p>
-      <p><strong>Opis:</strong> asdasd</p>
-    </div></div>
-  `;
-}
 
 app.get("/mail", (req, res) => {
-    res.send(htmlForEmail(testProblem));
+    //res.send(htmlForEmail(testProblem));
     return;
     //const emailList: (string | TEmailMapped)[] = [
     //    { email: 'olejnik.jakub@zstz-radzymin.pl', otherEmails: ['jacobole2000@gmail.com'] },
@@ -106,14 +92,20 @@ app.get("/mail", (req, res) => {
     //];
 
     const emailSubject = "Welcome to Our Service";
-    const emailContent = htmlForEmail(testProblem);
+    //const emailContent = htmlForEmail(testProblem);
 
     //sendEmails(["jacobole2000@gmail.com"], emailSubject, emailContent);
     res.sendStatus(200);
 })
 
+app.get("/test", async (req, res) => {
+    const graphAccessToken = await getGraphAccessToken();
+    const asda = await getTeamIdByName(graphAccessToken, config.authTeams.admins);
+    res.send(asda);
+})
+
 app.get("/members", async (req, res) => {
-    const teamId = "d0287945-f693-4323-a88f-ac0e118cee55";
+    const teamId = config.authTeams.adminsId;
 
     const result = await getTeamMembers(teamId);
 
