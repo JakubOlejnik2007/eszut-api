@@ -33,6 +33,7 @@ import sendEmails from "./utils/send-emails";
 import getTeamMembers from "./utils/getUsersFromTeam";
 import { IProblem } from "./types/db-types";
 import mongoose from "mongoose";
+import { getUserMail, insertUserMail } from "./db/helpers/mail-request.helper";
 
 require("./db/db_config");
 
@@ -51,7 +52,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
     cors({
-        origin: ["http://localhost:5173", "https://eszut-api.tenco.waw.pl", "https://eszut.tenco.waw.pl"],
+        origin: ["http://localhost:5173", "https://eszut-api.tenco.waw.pl", "https://eszut-client.tenco.waw.pl"],
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization"],
         credentials: true,
@@ -67,60 +68,6 @@ app.use((req, res, next) => {
     next();
 });
 
-const testProblem = {
-    priority: 3,
-    PlaceID: new mongoose.Schema.Types.ObjectId("649879769b8d119d39347bb2"),
-    whoName: 'Olejnik Jakub',
-    whoEmail: 'olejnik.jakub@zstz-radzymin.pl',
-    what: 'asdasdasd',
-    when: 1739482240212,
-    isSolved: false,
-    isUnderRealization: false,
-    CategoryID: new mongoose.Schema.Types.ObjectId("64ebb5340791e4fcf0c2937e"),
-    _id: new mongoose.Schema.Types.ObjectId("67ae6480632529b266a5af80"),
-    __v: 0
-}
-
-
-
-app.get("/mail", (req, res) => {
-    //res.send(htmlForEmail(testProblem));
-    return;
-    //const emailList: (string | TEmailMapped)[] = [
-    //    { email: 'olejnik.jakub@zstz-radzymin.pl', otherEmails: ['jacobole2000@gmail.com'] },
-    //    'jacobole@wp.pl'
-    //];
-
-    const emailSubject = "Welcome to Our Service";
-    //const emailContent = htmlForEmail(testProblem);
-
-    //sendEmails(["jacobole2000@gmail.com"], emailSubject, emailContent);
-    res.sendStatus(200);
-})
-
-app.get("/test", async (req, res) => {
-    const graphAccessToken = await getGraphAccessToken();
-    const asda = await getTeamIdByName(graphAccessToken, config.authTeams.admins);
-    res.send(asda);
-})
-
-app.get("/members", async (req, res) => {
-    const teamId = config.authTeams.adminsId;
-
-    const result = await getTeamMembers(teamId);
-
-    console.log(result);
-
-    const emails: string[] = [];
-
-    result.forEach((member: any) => {
-        emails.push(member.email);
-    })
-
-    console.log(emails);
-
-    res.send(emails);
-});
 
 /*
     PUBLIC ROUTES
@@ -153,6 +100,7 @@ app.get("/get-unsolved-problems-from-email", authenticateToken, getUnsolvedProbl
 app.get("/get-solved-problems", authenticateToken, getSolvedProblems);
 app.get("/get-comments", authenticateToken, getCommentsToProblem);
 app.get("/get-logs", authenticateToken, getLogData);
+app.get("/get-mail", authenticateToken, getUserMail)
 app.get("/get-user-role", authenticateToken, (req, res) => {
     res.send({ role: req.body.user.role });
 })
@@ -166,6 +114,7 @@ app.post("/insert-comment", authenticateToken, insertCommentToProblem);
 app.post("/insert-category", authenticateToken, insertCategory);
 app.post("/insert-place", authenticateToken, insertPlace);
 app.post("/create-token", authenticateToken, createToken);
+app.post("/insert-mail", authenticateToken, insertUserMail)
 // UPDATE ROUTES
 app.put("/update-problem", authenticateToken, updateProblem);
 app.put("/take-on-problem", authenticateToken, takeOnProblem);
