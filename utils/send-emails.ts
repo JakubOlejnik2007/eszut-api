@@ -2,6 +2,9 @@ import nodemailer from 'nodemailer';
 import { TEmailMapped } from '../types/email';
 import config from '../config';
 import getTeamMembers from "./getUsersFromTeam";
+import { getAllMappedMails } from '../db/helpers/mail-request.helper';
+import { writeLog } from '../db/helpers/log-request.helper';
+import LOGTYPES from '../types/logtypes.enum';
 
 const sendEmails = async (emails: (string | TEmailMapped)[], subject: string, htmlContent: string) => {
   const transporter = nodemailer.createTransport({
@@ -26,9 +29,13 @@ const sendEmails = async (emails: (string | TEmailMapped)[], subject: string, ht
 
     try {
       await transporter.sendMail(mailOptions);
-      console.log(`Email sent to ${to}, CC: ${cc.join(', ')}`);
     } catch (error) {
-      console.error(`Error sending email to ${to}:`, error);
+      writeLog({
+        type: LOGTYPES.ERROR,
+        userEmail: "Unknown",
+        date: Date.now(),
+        content: `Error sending email to ${to}: ${error}`
+      })
     }
   }
 }
@@ -71,17 +78,21 @@ const sendEmailsAboutNewProblem = async (problemToSend: any) => {
 
   const result = await getTeamMembers(config.authTeams.adminsId);
 
-  console.log(result);
 
-  const emails: string[] = [];
+  const emails: (string | TEmailMapped)[] = [];
 
+  const mapping = await getAllMappedMails();
   result.forEach((member: any) => {
-    emails.push(member.email);
+    const map = mapping.filter((mails) => mails.outlookMail === member.email);
+    map.length > 0 ? emails.push({
+      email: member.email,
+      otherEmails: [map[0].mappedTo]
+    }) :
+      emails.push(member.email);
   })
 
   const emailSubject = "Welcome to Our Service";
   const emailContent = htmlForEmail(problemToSend);
-  console.log(emails)
   sendEmails(["jacobole2000@gmail.com"], emailSubject, emailContent);
 
 }

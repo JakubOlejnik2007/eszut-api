@@ -27,3 +27,7 @@ export const insertUserMail = async (req: Request, res: Response) => {
         res.sendStatus(503)
     }
 }
+
+export const getAllMappedMails = async () => {
+    return await Mail.find();
+}
