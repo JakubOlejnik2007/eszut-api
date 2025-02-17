@@ -48,9 +48,6 @@ export const getUnsolvedProblemsFromEmail = async (req: Request, res: Response) 
             return res.sendStatus(403);
         }
 
-        console.log(req.body.user)
-
-
         const problems: any = await Problem.find({ isSolved: false, whoEmail: req.body.user.email })
             .sort({ priority: 1, when: 1 })
             .populate("CategoryID", "name")
@@ -128,8 +125,6 @@ export const insertProblem = async (req: Request, res: Response) => {
         };
 
         const createdProblem = await Problem.create(problem) as any;
-
-        console.log(createdProblem)
 
         const categoryName = await getCategoryName(createdProblem.CategoryID.toString());
         const placeName = await getPlaceName(createdProblem.PlaceID.toString());

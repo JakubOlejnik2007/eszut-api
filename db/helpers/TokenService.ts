@@ -19,7 +19,6 @@ class TokenService {
     }
 
     async getActiveTokens(userEmail: string): Promise<IToken[]> {
-        console.log(userEmail);
         return await Token.find({ userEmail, expiresAt: { $gt: new Date() } }).sort({ createdAt: -1 });
     }
 

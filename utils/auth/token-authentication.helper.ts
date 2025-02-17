@@ -7,7 +7,6 @@ import TokenService from "../../db/helpers/TokenService";
 
 
 const authenticateToken = async (req: Request, res: Response, next: NextFunction) => {
-    console.log(req.body)
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
@@ -18,7 +17,6 @@ const authenticateToken = async (req: Request, res: Response, next: NextFunction
     let isAuthenticated = false;
 
     await verify(token, config.secrets.longPeriod, async (err, user: any) => {
-        console.log("longPeriod", user, err)
 
         if (err) return;
 
@@ -30,13 +28,10 @@ const authenticateToken = async (req: Request, res: Response, next: NextFunction
         isAuthenticated = true;
     });
 
-    console.log("isAuth", isAuthenticated)
-
     if (isAuthenticated) return next();
 
 
     verify(token, config.secrets.access, (err, user: any) => {
-        console.log(token, err)
         if (err) {
             return res.status(403).json({ message: 'Unauthorized access: Invalid or expired token' });
         }
