@@ -42,22 +42,21 @@ export const getUserGroups = async (graphAccessToken: string, userId: string): P
 };
 
 export const getTeamIdByName = async (graphAccessToken: string, teamName: string): Promise<string | null> => {
-    const url = `https://graph.microsoft.com/v1.0/groups?$filter=resourceProvisioningOptions/Any(x:x eq 'Team') and displayName eq '${teamName}'`;
-    const headers = {
-        Authorization: `Bearer ${graphAccessToken}`,
-    };
+    let url = `https://graph.microsoft.com/v1.0/groups?$filter=resourceProvisioningOptions/Any(x:x eq 'Team')`;
+    const headers = { Authorization: `Bearer ${graphAccessToken}` };
+    let allTeams: any[] = [];
 
     try {
-        const response = await axios.get(url, { headers });
-        const teams = response.data.value;
-
-        if (teams.length > 0) {
-            return teams[0].id;
+        while (url) {
+            const response = await axios.get(url, { headers });
+            allTeams = allTeams.concat(response.data.value);
+            url = response.data["@odata.nextLink"] || null;
         }
 
-        return null;
+        const filteredTeam = allTeams.find(team => team.displayName.trim().toLowerCase() === teamName.trim().toLowerCase());
+        return filteredTeam ? filteredTeam.id : null;
     } catch (error) {
-        console.error('Error fetching team ID:', error);
-        throw new Error('Could not retrieve team ID');
+        console.error("Error fetching Teams:", error);
+        throw new Error("Could not retrieve team ID");
     }
 };

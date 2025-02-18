@@ -9,7 +9,7 @@ const {
     MAIL_SERVICE, MAIL_USER, MAIL_PASS,
     VAPID_PUBLIC, VAPID_PRIVATE,
     TENANT_ID, CLIENT_ID, CLIENT_SECRET,
-    ADMINISTRATORS_TEAM, ADMINISTRATORS_TEAM_ID, TEACHERS_TEAM,
+    ADMINISTRATORS_TEAM, TEACHERS_TEAM,
     REFRESH_SECRET, ACCESS_SECRET, LONG_PERIOD
 } = process.env;
 
@@ -36,7 +36,6 @@ const config: TConfigData = {
     },
     authTeams: {
         admins: String(ADMINISTRATORS_TEAM),
-        adminsId: String(ADMINISTRATORS_TEAM_ID),
         teachers: String(TEACHERS_TEAM)
     },
     secrets: {

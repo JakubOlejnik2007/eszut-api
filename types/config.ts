@@ -21,7 +21,6 @@ export type TConfigData = {
     };
     authTeams: {
         admins: string;
-        adminsId: string;
         teachers: string;
     };
     secrets: {

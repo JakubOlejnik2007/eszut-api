@@ -5,6 +5,7 @@ import getTeamMembers from "./getUsersFromTeam";
 import { getAllMappedMails } from '../db/helpers/mail-request.helper';
 import { writeLog } from '../db/helpers/log-request.helper';
 import LOGTYPES from '../types/logtypes.enum';
+import { getGraphAccessToken, getTeamIdByName } from './auth/get-user-teams';
 
 const sendEmails = async (emails: (string | TEmailMapped)[], subject: string, htmlContent: string) => {
   const transporter = nodemailer.createTransport({
@@ -76,7 +77,9 @@ const htmlForEmail = (problem: any) => {
 
 const sendEmailsAboutNewProblem = async (problemToSend: any) => {
 
-  const result = await getTeamMembers(config.authTeams.adminsId);
+  const accessToken = await getGraphAccessToken();
+  const adminsId = await getTeamIdByName(accessToken, config.authTeams.admins);
+  const result = await getTeamMembers(adminsId as string);
 
 
   const emails: (string | TEmailMapped)[] = [];
@@ -91,7 +94,9 @@ const sendEmailsAboutNewProblem = async (problemToSend: any) => {
       emails.push(member.email);
   })
 
-  const emailSubject = "Welcome to Our Service";
+  console.log(emails)
+
+  const emailSubject = "Nowe zgłoszenie w bazie danych";
   const emailContent = htmlForEmail(problemToSend);
   sendEmails(["jacobole2000@gmail.com"], emailSubject, emailContent);
 
