@@ -6,7 +6,7 @@ import EUserRole from "../../types/userroles.enum";
 export const getCommentsToProblem = async (req: Request, res: Response) => {
     try {
         const comments: any = await Comment.find({ ProblemID: req.query.ProblemID })
-            .sort({ date: 1 })
+            .sort({ date: -1 })
         res.send(comments)
     } catch (error) {
         res.send({
