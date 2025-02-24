@@ -203,6 +203,49 @@ export const takeOnProblem = async (req: Request, res: Response) => {
     }
 };
 
+export const takeOnProblemsBulk = async (req: Request, res: Response) => {
+    try {
+        if (req.body.user.role !== EUserRole.ADMIN) {
+            return res.sendStatus(403);
+        }
+        if (!Array.isArray(req.body.problems) || req.body.problems.length === 0) {
+            throw new Error();
+        }
+
+        const problems = await Problem.find({ _id: { $in: req.body.problems } });
+
+        if (problems.length !== req.body.problems.length) {
+            throw new Error();
+        }
+
+        const updates = [];
+        const logs = [];
+
+        for (const problem of problems) {
+            if (problem.isUnderRealization) continue;
+            problem.isUnderRealization = true;
+            problem.whoDealsEmail = req.body.user.email;
+            problem.whoDealsName = req.body.user.username;
+            updates.push(problem.save());
+
+            logs.push({
+                date: Date.now(),
+                content: `Problem ${problem._id} was taken by ${req.body.user.username}`,
+                userEmail: req.body.user.email,
+                type: LOGTYPES.INFO,
+            });
+        }
+
+        await Promise.all(updates);
+        logs.forEach(writeLog);
+
+        res.sendStatus(200);
+    } catch {
+        res.sendStatus(503);
+    }
+};
+
+
 export const rejectProblem = async (req: Request, res: Response) => {
     try {
         if (req.body.user.role !== EUserRole.ADMIN) {
@@ -249,6 +292,50 @@ export const markProblemAsSolved = async (req: Request, res: Response) => {
         })
         res.sendStatus(200);
     } catch (error) {
+        res.sendStatus(503);
+    }
+};
+
+export const markProblemsAsSolvedBulk = async (req: Request, res: Response) => {
+    try {
+        if (req.body.user.role !== EUserRole.ADMIN) {
+            return res.sendStatus(403);
+        }
+        if (!Array.isArray(req.body.problems) || req.body.problems.length === 0) {
+            throw new Error();
+        }
+
+        const problems = await Problem.find({ _id: { $in: req.body.problems } });
+
+        if (problems.length !== req.body.problems.length) {
+            throw new Error();
+        }
+
+        const updates = [];
+        const logs = [];
+
+        for (const problem of problems) {
+            if (problem.isUnderRealization && problem.whoDealsEmail !== req.body.user.email) continue;
+            problem.isUnderRealization = false;
+            problem.isSolved = true;
+            problem.whoSolvedEmail = req.body.user.email;
+            problem.whoSolvedName = req.body.user.username;
+            problem.dateOfSolved = Date.now();
+            updates.push(problem.save());
+
+            logs.push({
+                date: Date.now(),
+                content: `Problem ${problem._id} was marked as solved by ${req.body.user.username}`,
+                userEmail: req.body.user.email,
+                type: LOGTYPES.INFO,
+            });
+        }
+
+        await Promise.all(updates);
+        logs.forEach(writeLog);
+
+        res.sendStatus(200);
+    } catch {
         res.sendStatus(503);
     }
 };

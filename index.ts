@@ -11,8 +11,10 @@ import {
     insertProblem,
     markProblemAsSolved,
     markProblemAsUnsolved,
+    markProblemsAsSolvedBulk,
     rejectProblem,
     takeOnProblem,
+    takeOnProblemsBulk,
     updateProblem,
 } from "./db/helpers/problem-request.helper";
 import { getCommentsToProblem, insertCommentToProblem } from "./db/helpers/comment-request.helper";
@@ -118,8 +120,10 @@ app.post("/insert-mail", authenticateToken, insertUserMail)
 // UPDATE ROUTES
 app.put("/update-problem", authenticateToken, updateProblem);
 app.put("/take-on-problem", authenticateToken, takeOnProblem);
+app.put("/take-on-problem-bulk", authenticateToken, takeOnProblemsBulk);
 app.put("/reject-problem", authenticateToken, rejectProblem);
 app.put("/mark-problem-as-solved", authenticateToken, markProblemAsSolved);
+app.put("/mark-problem-as-solved-bulk", authenticateToken, markProblemsAsSolvedBulk);
 app.put("/mark-problem-as-unsolved", authenticateToken, markProblemAsUnsolved);
 
 // DELETE ROUTES
