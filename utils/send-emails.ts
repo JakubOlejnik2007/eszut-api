@@ -94,11 +94,9 @@ const sendEmailsAboutNewProblem = async (problemToSend: any) => {
       emails.push(member.email);
   })
 
-  console.log(emails)
-
   const emailSubject = "Nowe zgłoszenie w bazie danych";
   const emailContent = htmlForEmail(problemToSend);
-  sendEmails(["jacobole2000@gmail.com"], emailSubject, emailContent);
+  sendEmails(emails, emailSubject, emailContent);
 
 }
 
