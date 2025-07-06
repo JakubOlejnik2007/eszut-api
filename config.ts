@@ -3,45 +3,35 @@ import { TConfigData } from "./types/config";
 
 dotenv.config();
 
-const {
-    EXPRESS_PORT,
-    MONGO_DB_URL,
-    MAIL_SERVICE, MAIL_USER, MAIL_PASS,
-    VAPID_PUBLIC, VAPID_PRIVATE,
-    TENANT_ID, CLIENT_ID, CLIENT_SECRET,
-    ADMINISTRATORS_TEAM, TEACHERS_TEAM,
-    REFRESH_SECRET, ACCESS_SECRET, LONG_PERIOD
-} = process.env;
-
 const config: TConfigData = {
     express: {
-        port: Number(EXPRESS_PORT),
+        port: Number(process.env.EXPRESS_PORT),
     },
     MongoDB: {
-        url: String(MONGO_DB_URL),
+        url: String(process.env.MONGO_DB_URL),
     },
     mail: {
-        service: String(MAIL_SERVICE),
-        user: String(MAIL_USER),
-        pass: String(MAIL_PASS),
+        service: String(process.env.MAIL_SERVICE),
+        user: String(process.env.MAIL_USER),
+        pass: String(process.env.MAIL_PASS),
     },
     vapid: {
-        public: String(VAPID_PUBLIC),
-        private: String(VAPID_PRIVATE)
+        public: String(process.env.VAPID_PUBLIC),
+        private: String(process.env.VAPID_PRIVATE)
     },
     EntraID: {
-        tenant: String(TENANT_ID),
-        client: String(CLIENT_ID),
-        secret: String(CLIENT_SECRET)
+        tenant: String(process.env.TENANT_ID),
+        client: String(process.env.CLIENT_ID),
+        secret: String(process.env.CLIENT_SECRET)
     },
     authTeams: {
-        admins: String(ADMINISTRATORS_TEAM),
-        teachers: String(TEACHERS_TEAM)
+        admins: String(process.env.ADMINISTRATORS_TEAM),
+        teachers: String(process.env.TEACHERS_TEAM)
     },
     secrets: {
-        refresh: String(REFRESH_SECRET),
-        access: String(ACCESS_SECRET),
-        longPeriod: String(LONG_PERIOD)
+        refresh: String(process.env.REFRESH_SECRET),
+        access: String(process.env.ACCESS_SECRET),
+        longPeriod: String(process.env.LONG_PERIOD)
     }
 };
 export default config;
